@@ -1,0 +1,143 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = true;
+//  DEBUG_PARSER= true;
+  
+//  LOOKAHEAD = 2;
+//  FORCE_LA_CHECK = true;
+//  DEBUG_LOOKAHEAD = true;
+//DEBUG_TOKEN_MANAGER = true;
+//CHOICE_AMBIGUITY_CHECK = 3;
+}
+
+PARSER_BEGIN(MeinParser)
+import java.io.FileReader;
+
+public class MeinParser
+{
+  public static void main(String args []) throws Exception
+  {
+    FileReader reader = new FileReader("./praktium/test1.txt");
+    
+    MeinParser meinParser = new MeinParser(reader);
+    
+//	meinParser.vars();
+//meinParser.assignment();
+//meinParser.whileStmnt();
+
+meinParser.program();
+
+  }
+}
+
+PARSER_END(MeinParser)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN : /* OPERATORS */
+{
+  < WHILE : "while" >
+| < DO : "do" >
+| < BEGIN : "begin" >
+| < END : "end" >
+| < IN : "in" >
+| < OUT : "out" >
+| < VAR : "var" >
+
+| < ZERO : "0" >
+| < EINS : "1" >
+| < IDENT : [ "a"-"z", "A"-"Z" ]([ "a"-"z", "A"-"Z", "0"-"9" ])* >
+
+| < ASSIGN : "=" >
+| < PLUS : "+" >
+
+
+| < NOTEQUAL : "!=" >
+
+
+| < KOMMA : "," >
+| < LRUNDKLAMMER : "(" >
+| < RRUNDKLAMMER : ")" >
+| < SEMIKOLEN : ";" >
+ 
+}
+
+void program() :
+{
+}
+{
+ <IDENT> < LRUNDKLAMMER> input() < SEMIKOLEN> output() < RRUNDKLAMMER> vars()< SEMIKOLEN> statement()< EOF >
+{System.out.println("Ein gültiges program!");}
+}
+
+void input() :
+{
+}
+{
+ < IN > <IDENT >(< KOMMA >< IDENT>)* 
+{System.out.println("Ein gültiges Input!");}
+}
+
+void output() :
+{
+}
+{
+ < OUT > <IDENT > 
+{System.out.println("Ein gültiges output!");}
+}
+
+
+
+void vars() :
+{
+}
+{
+< VAR> < LRUNDKLAMMER> <IDENT >(< KOMMA > <IDENT >)*  < RRUNDKLAMMER>
+{System.out.println("Ein gültiges vars!");}
+}
+
+void condition() :
+{
+}
+{
+< IDENT> < NOTEQUAL>< IDENT> 
+{System.out.println("Ein gültiges condition!");}
+}
+
+void assignment() :
+{
+}
+{
+< IDENT> < ASSIGN> (<ZERO >|< IDENT > <PLUS > < EINS>)
+{System.out.println("Ein gültiges assignment!");}
+}
+
+
+void statement() :
+{
+}
+{
+(assignment()| whileStmnt()) (< SEMIKOLEN> statement())?
+{System.out.println("Ein gültiges statement!");}
+}
+
+void whileStmnt() :
+{
+}
+{
+< WHILE> condition() <DO > <BEGIN > statement() <END >
+{System.out.println("Ein gültiges whileStmnt!");}
+}
+
+
+
+
