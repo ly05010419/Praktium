@@ -74,27 +74,27 @@ public class MeinParser
 
   public void createCopyBefehle(StringBuffer s, String var)
   {
-    s.append(hilfsVarsMap.get(token.image) + " = 0;COPY (" + hilfsVarsMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    s.append(hilfsVarsMap.get(token.image) + " = 0 ;COPY (" + hilfsVarsMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
     zeileNummer++;
     markerMap.put("ersteAnfangMake", "" + zeileNummer);
-    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + ";\n");
+    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
     zeileNummer++;
-    s.append(inputVarsMap.get(token.image) + "--;\n");
+    s.append(inputVarsMap.get(token.image) + "--\n");
     zeileNummer++;
-    s.append(tempVarsMap.get(token.image) + "++;\n");
+    s.append(tempVarsMap.get(token.image) + "++\n");
     zeileNummer++;
-    s.append("goto " + markerMap.get("ersteAnfangMake") + ";\n");
+    s.append("goto " + markerMap.get("ersteAnfangMake") + "\n");
     zeileNummer++;
     markerMap.put("ersteAnfangMake2", "" + zeileNummer);
-    s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + ";\n");
+    s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\n");
     zeileNummer++;
-    s.append(tempVarsMap.get(var) + "--;\n");
+    s.append(tempVarsMap.get(var) + "--\n");
     zeileNummer++;
-    s.append(hilfsVarsMap.get(var) + "++;\n");
+    s.append(hilfsVarsMap.get(var) + "++\n");
     zeileNummer++;
-    s.append(inputVarsMap.get(var) + "++;\n");
+    s.append(inputVarsMap.get(var) + "++\n");
     zeileNummer++;
-    s.append("goto " + markerMap.get("ersteAnfangMake2") + ";\n");
+    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\n");
     zeileNummer++;
   }
 }
@@ -147,7 +147,7 @@ void input() :
     }
   )*
   {
-    System.out.println("Ein gu\u0308ltiges Input!");
+    System.out.println("Ein gueltiges Input!");
   }
 }
 
@@ -157,7 +157,7 @@ void output() :
 {
   < OUT > < IDENT >
   {
-    System.out.println("Ein gu\u0308ltiges output!");
+    System.out.println("Ein gueltiges output!");
   }
 }
 
@@ -167,7 +167,7 @@ void vars() :
 {
   < VAR > < LRUNDKLAMMER > < IDENT > (< KOMMA > < IDENT >)* < RRUNDKLAMMER >
   {
-    System.out.println("Ein gu\u0308ltiges vars!");
+    System.out.println("Ein gueltiges vars!");
   }
 }
 
@@ -185,7 +185,7 @@ void condition() :
     createCopyBefehle(s, token.image);
   }
   {
-    System.out.println("Ein gu\u0308ltiges condition!");
+    System.out.println("Ein gueltiges condition!");
   }
 }
 
@@ -203,9 +203,9 @@ String statement() :
     < SEMIKOLEN > s = statement()
   )?
   {
-    System.out.println("Ein gu\u0308ltiges statement!");
+    System.out.println("Ein gueltiges statement!");
     System.out.println(s);
-    System.out.println("Ein gu\u0308ltiges statement!");
+    System.out.println("Ein gueltiges statement!");
     return s;
   }
 }
@@ -221,29 +221,29 @@ String whileStmnt() :
   < BEGIN >
   {
     markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + ";\n");
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\n");
     zeileNummer++;
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 7) + ";\n");
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 7) + "\n");
     zeileNummer++;
-    s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--;\n");
+    s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--\n");
     zeileNummer++;
-    s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--;\n");
+    s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--\n");
     zeileNummer++;
-    s.append("goto " + markerMap.get("AnfangWhileStmnt") + ";\n");
+    s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\n");
     zeileNummer++;
   }
   statement = statement()
   {
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + zeileNummer + ";\n");
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + zeileNummer + "\n");
     zeileNummer++;
     s.append(statement);
   }
   < END >
   {
-    s.append("goto 1;\n");
-    System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    s.append("goto 1\n");
+    System.out.println("Ein gueltiges whileStmnt!");
     System.out.println(s);
-    System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    System.out.println("Ein gueltiges whileStmnt!");
     return s.toString();
   }
 }
@@ -264,7 +264,7 @@ String assignment() :
   (
     < ZERO >
     {
-      s.append("0;\n");
+      s.append("0\n");
     }
   | < IDENT >
     {
@@ -276,14 +276,14 @@ String assignment() :
     }
     < EINS >
     {
-      s.append("1;\n");
+      s.append("1\n");
     }
   )
   {
     zeileNummer++;
-    System.out.println("Ein gu\u0308ltiges assignment!");
+    System.out.println("----------Ein gueltiges assignment!----------");
     System.out.println(s);
-    System.out.println("Ein gu\u0308ltiges assignment!");
+    System.out.println("++++++++++Ein gueltiges assignment!++++++++++");
     return s.toString();
   }
 }
@@ -295,6 +295,6 @@ void program() :
 {
   < IDENT > < LRUNDKLAMMER > input() < SEMIKOLEN > output() < RRUNDKLAMMER > vars() < SEMIKOLEN > statement() < EOF >
   {
-    System.out.println("Ein gu\u0308ltiges program!");
+    System.out.println("Ein gueltiges program!");
   }
 }

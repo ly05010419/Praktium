@@ -62,24 +62,24 @@ public class MeinParser implements MeinParserConstants {
     s.append(hilfsVarsMap.get(token.image) + " = 0 ;COPY (" + hilfsVarsMap.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
     zeileNummer++;
     markerMap.put("ersteAnfangMake", "" + zeileNummer);
-    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
+    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
     zeileNummer++;
-    s.append(inputVarsMap.get(token.image) + "--\n");
+    s.append(inputVarsMap.get(token.image) + "--\u005cn");
     zeileNummer++;
-    s.append(tempVarsMap.get(token.image) + "++\n");
+    s.append(tempVarsMap.get(token.image) + "++\u005cn");
     zeileNummer++;
-    s.append("goto " + markerMap.get("ersteAnfangMake") + "\n");
+    s.append("goto " + markerMap.get("ersteAnfangMake") + "\u005cn");
     zeileNummer++;
     markerMap.put("ersteAnfangMake2", "" + zeileNummer);
-    s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\n");
+    s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\u005cn");
     zeileNummer++;
-    s.append(tempVarsMap.get(var) + "--\n");
+    s.append(tempVarsMap.get(var) + "--\u005cn");
     zeileNummer++;
-    s.append(hilfsVarsMap.get(var) + "++\n");
+    s.append(hilfsVarsMap.get(var) + "++\u005cn");
     zeileNummer++;
-    s.append(inputVarsMap.get(var) + "++\n");
+    s.append(inputVarsMap.get(var) + "++\u005cn");
     zeileNummer++;
-    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\n");
+    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\u005cn");
     zeileNummer++;
   }
 
@@ -103,13 +103,13 @@ public class MeinParser implements MeinParserConstants {
       this.variableList.add(token.image);
       createVars(token.image);
     }
-    System.out.println("Ein gu\u0308ltiges Input!");
+    System.out.println("Ein gueltiges Input!");
   }
 
   final public void output() throws ParseException {
     jj_consume_token(OUT);
     jj_consume_token(IDENT);
-    System.out.println("Ein gu\u0308ltiges output!");
+    System.out.println("Ein gueltiges output!");
   }
 
   final public void vars() throws ParseException {
@@ -130,7 +130,7 @@ public class MeinParser implements MeinParserConstants {
       jj_consume_token(IDENT);
     }
     jj_consume_token(RRUNDKLAMMER);
-    System.out.println("Ein gu\u0308ltiges vars!");
+    System.out.println("Ein gueltiges vars!");
   }
 
   final public void condition() throws ParseException {
@@ -139,7 +139,7 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(NOTEQUAL);
     jj_consume_token(IDENT);
     createCopyBefehle(s, token.image);
-    System.out.println("Ein gu\u0308ltiges condition!");
+    System.out.println("Ein gueltiges condition!");
   }
 
   final public String statement() throws ParseException {
@@ -165,9 +165,9 @@ public class MeinParser implements MeinParserConstants {
       jj_la1[3] = jj_gen;
       ;
     }
-    System.out.println("Ein gu\u0308ltiges statement!");
+    System.out.println("Ein gueltiges statement!");
     System.out.println(s);
-    System.out.println("Ein gu\u0308ltiges statement!");
+    System.out.println("Ein gueltiges statement!");
     {if (true) return s;}
     throw new Error("Missing return statement in function");
   }
@@ -180,25 +180,25 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(DO);
     jj_consume_token(BEGIN);
     markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\n");
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\u005cn");
     zeileNummer++;
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 7) + "\n");
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 7) + "\u005cn");
     zeileNummer++;
-    s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--\n");
+    s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--\u005cn");
     zeileNummer++;
-    s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--\n");
+    s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--\u005cn");
     zeileNummer++;
-    s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\n");
+    s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\u005cn");
     zeileNummer++;
     statement = statement();
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + zeileNummer + "\n");
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + zeileNummer + "\u005cn");
     zeileNummer++;
     s.append(statement);
     jj_consume_token(END);
-    s.append("goto 1\n");
-    System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    s.append("goto 1\u005cn");
+    System.out.println("Ein gueltiges whileStmnt!");
     System.out.println(s);
-    System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    System.out.println("Ein gueltiges whileStmnt!");
     {if (true) return s.toString();}
     throw new Error("Missing return statement in function");
   }
@@ -212,7 +212,7 @@ public class MeinParser implements MeinParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ZERO:
       jj_consume_token(ZERO);
-      s.append("0\n");
+      s.append("0\u005cn");
       break;
     case IDENT:
       jj_consume_token(IDENT);
@@ -220,7 +220,7 @@ public class MeinParser implements MeinParserConstants {
       jj_consume_token(PLUS);
       s.append("+");
       jj_consume_token(EINS);
-      s.append("1\n");
+      s.append("1\u005cn");
       break;
     default:
       jj_la1[4] = jj_gen;
@@ -228,9 +228,9 @@ public class MeinParser implements MeinParserConstants {
       throw new ParseException();
     }
     zeileNummer++;
-    System.out.println("Ein gu\u0308ltiges assignment!");
+    System.out.println("----------Ein gueltiges assignment!----------");
     System.out.println(s);
-    System.out.println("Ein gu\u0308ltiges assignment!");
+    System.out.println("++++++++++Ein gueltiges assignment!++++++++++");
     {if (true) return s.toString();}
     throw new Error("Missing return statement in function");
   }
@@ -247,7 +247,7 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(SEMIKOLEN);
     statement();
     jj_consume_token(0);
-    System.out.println("Ein gu\u0308ltiges program!");
+    System.out.println("Ein gueltiges program!");
   }
 
   /** Generated Token Manager. */
