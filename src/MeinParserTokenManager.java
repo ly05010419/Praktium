@@ -3,6 +3,9 @@ import java.io.FileReader;
 import java.io.File;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.*;
+import java.util.Queue;
+import java.util.LinkedList;
 
 /** Token Manager. */
 public class MeinParserTokenManager implements MeinParserConstants

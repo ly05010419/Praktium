@@ -1,0 +1,10 @@
+COPY(R2,R1)
+COPY(R5,R4)
+if R2==0 goto 7
+if R5==0 goto 10
+R2--
+R5--
+goto 3
+if R5==0 goto 10
+a=1+2
+goto 0

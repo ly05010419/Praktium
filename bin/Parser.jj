@@ -4,51 +4,100 @@
 options
 {
   static = false;
-//  DEBUG_PARSER= true;
-  
-//  LOOKAHEAD = 2;
-//  FORCE_LA_CHECK = true;
-//  DEBUG_LOOKAHEAD = true;
-//DEBUG_TOKEN_MANAGER = true;
-//CHOICE_AMBIGUITY_CHECK = 3;
+  //  DEBUG_PARSER= true;
+  //  LOOKAHEAD = 2;
+  //  FORCE_LA_CHECK = true;
+  //  DEBUG_LOOKAHEAD = true;
+  //DEBUG_TOKEN_MANAGER = true;
+  //CHOICE_AMBIGUITY_CHECK = 3;
 }
 
 PARSER_BEGIN(MeinParser)
 import java.io.FileReader;
-import java.io.File; 
-import java.io.BufferedWriter;  
-import java.io.FileWriter; 
+import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.*;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class MeinParser
 {
+  // static Stack argStack = new Stack();
+  static Queue < String > argStack = new LinkedList < String > ();
+
+  static HashMap < String, String > inputVarsMap = new HashMap < String, String > ();
+
+  static HashMap < String, String > hilfsVarsMap = new HashMap < String, String > ();
+
+  static HashMap < String, String > tempVarsMap = new HashMap < String, String > ();
+
+  static HashMap < String, String > outputVarsMap = new HashMap < String, String > ();
+
+  static HashMap < String, String > markerMap = new HashMap < String, String > ();
+
+  static ArrayList < String > variableList = new ArrayList();
+
+  static int zeileNummer = 1;
+
+  static StringBuffer s = new StringBuffer();
+
+  static int varsNum = 1;
+
   public static void main(String args []) throws Exception
   {
     FileReader reader = new FileReader("./praktium/test1.txt");
-    
     MeinParser meinParser = new MeinParser(reader);
-    
-	//meinParser.vars();
-	//meinParser.assignment();
-	//meinParser.whileStmnt();
-
-	meinParser.program();
-
-	meinParser.wrieteFile("相对路径，如果没有则要建立一个新的output。txt文件");
+    //meinParser.vars();
+    //meinParser.assignment();
+    //meinParser.whileStmnt();
+    meinParser.program();
+    meinParser.wrieteFile(s.toString());
   }
-  
-  public void wrieteFile(String str) throws Exception{
 
-	File writename = new File("./praktium/code.txt");
-	writename.createNewFile();  
-	BufferedWriter out = new BufferedWriter(new FileWriter(writename));  
-	out.write(str);  
-	out.flush();  
-	out.close();  
+  public void wrieteFile(String str) throws Exception
+  {
+    File writename = new File("./praktium/code.txt");
+    writename.createNewFile();
+    BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+    out.write(str);
+    out.flush();
+    out.close();
+  }
+
+  public void createVars(String image)
+  {
+    inputVarsMap.put(image, "R" + varsNum++);
+    hilfsVarsMap.put(image, "R" + varsNum++);
+    tempVarsMap.put(image, "R" + varsNum++);
+  }
+
+  public void createCopyBefehle(StringBuffer s, String var)
+  {
+    s.append(hilfsVarsMap.get(token.image) + " = 0;COPY (" + hilfsVarsMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    zeileNummer++;
+    markerMap.put("ersteAnfangMake", "" + zeileNummer);
+    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + ";\n");
+    zeileNummer++;
+    s.append(inputVarsMap.get(token.image) + "--;\n");
+    zeileNummer++;
+    s.append(tempVarsMap.get(token.image) + "++;\n");
+    zeileNummer++;
+    s.append("goto " + markerMap.get("ersteAnfangMake") + ";\n");
+    zeileNummer++;
+    markerMap.put("ersteAnfangMake2", "" + zeileNummer);
+    s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + ";\n");
+    zeileNummer++;
+    s.append(tempVarsMap.get(var) + "--;\n");
+    zeileNummer++;
+    s.append(hilfsVarsMap.get(var) + "++;\n");
+    zeileNummer++;
+    s.append(inputVarsMap.get(var) + "++;\n");
+    zeileNummer++;
+    s.append("goto " + markerMap.get("ersteAnfangMake2") + ";\n");
+    zeileNummer++;
   }
 }
-
-
-
 
 PARSER_END(MeinParser)
 
@@ -69,92 +118,183 @@ TOKEN : /* OPERATORS */
 | < IN : "in" >
 | < OUT : "out" >
 | < VAR : "var" >
-
 | < ZERO : "0" >
 | < EINS : "1" >
-| < IDENT : [ "a"-"z", "A"-"Z" ]([ "a"-"z", "A"-"Z", "0"-"9" ])* >
-
+| < IDENT : [ "a"-"z", "A"-"Z" ] ([ "a"-"z", "A"-"Z", "0"-"9" ])* >
 | < ASSIGN : "=" >
 | < PLUS : "+" >
-
-
 | < NOTEQUAL : "!=" >
-
-
 | < KOMMA : "," >
 | < LRUNDKLAMMER : "(" >
 | < RRUNDKLAMMER : ")" >
 | < SEMIKOLEN : ";" >
- 
-}
-
-void program() :
-{
-}
-{
- <IDENT> < LRUNDKLAMMER> input() < SEMIKOLEN> output() < RRUNDKLAMMER> vars()< SEMIKOLEN> statement()< EOF >
-{System.out.println("Ein gültiges program!");}
 }
 
 void input() :
 {
 }
 {
- < IN > <IDENT >(< KOMMA >< IDENT>)* 
-{System.out.println("Ein gültiges Input!");}
+  < IN > < IDENT >
+  {
+    this.variableList.add(token.image);
+    createVars(token.image);
+  }
+  (
+    < KOMMA > < IDENT >
+    {
+      this.variableList.add(token.image);
+      createVars(token.image);
+    }
+  )*
+  {
+    System.out.println("Ein gu\u0308ltiges Input!");
+  }
 }
 
 void output() :
 {
 }
 {
- < OUT > <IDENT > 
-{System.out.println("Ein gültiges output!");}
+  < OUT > < IDENT >
+  {
+    System.out.println("Ein gu\u0308ltiges output!");
+  }
 }
-
-
 
 void vars() :
 {
 }
 {
-< VAR> < LRUNDKLAMMER> <IDENT >(< KOMMA > <IDENT >)*  < RRUNDKLAMMER>
-{System.out.println("Ein gültiges vars!");}
+  < VAR > < LRUNDKLAMMER > < IDENT > (< KOMMA > < IDENT >)* < RRUNDKLAMMER >
+  {
+    System.out.println("Ein gu\u0308ltiges vars!");
+  }
 }
 
 void condition() :
 {
 }
 {
-< IDENT> < NOTEQUAL>< IDENT> 
-{System.out.println("Ein gültiges condition!");}
+  < IDENT >
+  {
+    createCopyBefehle(s, token.image);
+  }
+  < NOTEQUAL > 
+  < IDENT >
+  {
+    createCopyBefehle(s, token.image);
+  }
+  {
+    System.out.println("Ein gu\u0308ltiges condition!");
+  }
 }
 
-void assignment() :
+String statement() :
 {
-}
-{
-< IDENT> < ASSIGN> (<ZERO >|< IDENT > <PLUS > < EINS>)
-{System.out.println("Ein gültiges assignment!");}
-}
-
-
-void statement() :
-{
-}
-{
-(assignment()| whileStmnt()) (< SEMIKOLEN> statement())?
-{System.out.println("Ein gültiges statement!");}
-}
-
-void whileStmnt() :
-{
+  String s = null;
 }
 {
-< WHILE> condition() <DO > <BEGIN > statement() <END >
-{System.out.println("Ein gültiges whileStmnt!");}
+  (
+    s = whileStmnt()
+  | 
+    s = assignment()
+  )
+  (
+    < SEMIKOLEN > s = statement()
+  )?
+  {
+    System.out.println("Ein gu\u0308ltiges statement!");
+    System.out.println(s);
+    System.out.println("Ein gu\u0308ltiges statement!");
+    return s;
+  }
 }
 
+String whileStmnt() :
+{
+  StringBuffer s = new StringBuffer();
+  String statement = null;
+}
+{
+  < WHILE > 
+  condition() < DO > 
+  < BEGIN >
+  {
+    markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + ";\n");
+    zeileNummer++;
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 7) + ";\n");
+    zeileNummer++;
+    s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--;\n");
+    zeileNummer++;
+    s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--;\n");
+    zeileNummer++;
+    s.append("goto " + markerMap.get("AnfangWhileStmnt") + ";\n");
+    zeileNummer++;
+  }
+  statement = statement()
+  {
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + zeileNummer + ";\n");
+    zeileNummer++;
+    s.append(statement);
+  }
+  < END >
+  {
+    s.append("goto 1;\n");
+    System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    System.out.println(s);
+    System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    return s.toString();
+  }
+}
 
+String assignment() :
+{
+  StringBuffer s = new StringBuffer();
+}
+{
+  < IDENT >
+  {
+    s.append("" + hilfsVarsMap.get(token.image));
+  }
+  < ASSIGN >
+  {
+    s.append("=");
+  }
+  (
+    < ZERO >
+    {
+      s.append("0;\n");
+    }
+  | < IDENT >
+    {
+      s.append(token.image);
+    }
+    < PLUS >
+    {
+      s.append("+");
+    }
+    < EINS >
+    {
+      s.append("1;\n");
+    }
+  )
+  {
+    zeileNummer++;
+    System.out.println("Ein gu\u0308ltiges assignment!");
+    System.out.println(s);
+    System.out.println("Ein gu\u0308ltiges assignment!");
+    return s.toString();
+  }
+}
 
-
+void program() :
+{
+  HashMap map = new HashMap();
+}
+{
+  < IDENT > < LRUNDKLAMMER > input() < SEMIKOLEN > output() < RRUNDKLAMMER > vars() < SEMIKOLEN > statement() < EOF >
+  {
+    System.out.println("Ein gu\u0308ltiges program!");
+  }
+}

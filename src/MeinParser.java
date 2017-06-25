@@ -3,50 +3,91 @@ import java.io.FileReader;
 import java.io.File;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.*;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class MeinParser implements MeinParserConstants {
+  // static Stack argStack = new Stack();
+  static Queue < String > argStack = new LinkedList < String > ();
+
+  static HashMap < String, String > inputVarsMap = new HashMap < String, String > ();
+
+  static HashMap < String, String > hilfsVarsMap = new HashMap < String, String > ();
+
+  static HashMap < String, String > tempVarsMap = new HashMap < String, String > ();
+
+  static HashMap < String, String > outputVarsMap = new HashMap < String, String > ();
+
+  static HashMap < String, String > markerMap = new HashMap < String, String > ();
+
+  static ArrayList < String > variableList = new ArrayList();
+
+  static int zeileNummer = 1;
+
+  static StringBuffer s = new StringBuffer();
+
+  static int varsNum = 1;
+
   public static void main(String args []) throws Exception
   {
     FileReader reader = new FileReader("./praktium/test1.txt");
-
     MeinParser meinParser = new MeinParser(reader);
-
-        //meinParser.vars();
-        //meinParser.assignment();
-        //meinParser.whileStmnt();
-
-        meinParser.program();
-
-        meinParser.wrieteFile("\u76f8\u5bf9\u8def\u5f84\uff0c\u5982\u679c\u6ca1\u6709\u5219\u8981\u5efa\u7acb\u4e00\u4e2a\u65b0\u7684output\u3002txt\u6587\u4ef6");
+    //meinParser.vars();
+    //meinParser.assignment();
+    //meinParser.whileStmnt();
+    meinParser.program();
+    meinParser.wrieteFile(s.toString());
   }
 
-  public void wrieteFile(String str) throws Exception{
-
-        File writename = new File("./praktium/code.txt");
-        writename.createNewFile();
-        BufferedWriter out = new BufferedWriter(new FileWriter(writename));
-        out.write(str);
-        out.flush();
-        out.close();
+  public void wrieteFile(String str) throws Exception
+  {
+    File writename = new File("./praktium/code.txt");
+    writename.createNewFile();
+    BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+    out.write(str);
+    out.flush();
+    out.close();
   }
 
-  final public void program() throws ParseException {
-    jj_consume_token(IDENT);
-    jj_consume_token(LRUNDKLAMMER);
-    input();
-    jj_consume_token(SEMIKOLEN);
-    output();
-    jj_consume_token(RRUNDKLAMMER);
-    vars();
-    jj_consume_token(SEMIKOLEN);
-    statement();
-    jj_consume_token(0);
- System.out.println("Ein gu\u0308ltiges program!");
+  public void createVars(String image)
+  {
+    inputVarsMap.put(image, "R" + varsNum++);
+    hilfsVarsMap.put(image, "R" + varsNum++);
+    tempVarsMap.put(image, "R" + varsNum++);
+  }
+
+  public void createCopyBefehle(StringBuffer s, String var)
+  {
+    s.append(hilfsVarsMap.get(token.image) + " = 0 ;COPY (" + hilfsVarsMap.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
+    zeileNummer++;
+    markerMap.put("ersteAnfangMake", "" + zeileNummer);
+    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
+    zeileNummer++;
+    s.append(inputVarsMap.get(token.image) + "--\n");
+    zeileNummer++;
+    s.append(tempVarsMap.get(token.image) + "++\n");
+    zeileNummer++;
+    s.append("goto " + markerMap.get("ersteAnfangMake") + "\n");
+    zeileNummer++;
+    markerMap.put("ersteAnfangMake2", "" + zeileNummer);
+    s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\n");
+    zeileNummer++;
+    s.append(tempVarsMap.get(var) + "--\n");
+    zeileNummer++;
+    s.append(hilfsVarsMap.get(var) + "++\n");
+    zeileNummer++;
+    s.append(inputVarsMap.get(var) + "++\n");
+    zeileNummer++;
+    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\n");
+    zeileNummer++;
   }
 
   final public void input() throws ParseException {
     jj_consume_token(IN);
     jj_consume_token(IDENT);
+    this.variableList.add(token.image);
+    createVars(token.image);
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -59,14 +100,16 @@ public class MeinParser implements MeinParserConstants {
       }
       jj_consume_token(KOMMA);
       jj_consume_token(IDENT);
+      this.variableList.add(token.image);
+      createVars(token.image);
     }
- System.out.println("Ein gu\u0308ltiges Input!");
+    System.out.println("Ein gu\u0308ltiges Input!");
   }
 
   final public void output() throws ParseException {
     jj_consume_token(OUT);
     jj_consume_token(IDENT);
- System.out.println("Ein gu\u0308ltiges output!");
+    System.out.println("Ein gu\u0308ltiges output!");
   }
 
   final public void vars() throws ParseException {
@@ -87,69 +130,124 @@ public class MeinParser implements MeinParserConstants {
       jj_consume_token(IDENT);
     }
     jj_consume_token(RRUNDKLAMMER);
- System.out.println("Ein gu\u0308ltiges vars!");
+    System.out.println("Ein gu\u0308ltiges vars!");
   }
 
   final public void condition() throws ParseException {
     jj_consume_token(IDENT);
+    createCopyBefehle(s, token.image);
     jj_consume_token(NOTEQUAL);
     jj_consume_token(IDENT);
- System.out.println("Ein gu\u0308ltiges condition!");
+    createCopyBefehle(s, token.image);
+    System.out.println("Ein gu\u0308ltiges condition!");
   }
 
-  final public void assignment() throws ParseException {
-    jj_consume_token(IDENT);
-    jj_consume_token(ASSIGN);
+  final public String statement() throws ParseException {
+  String s = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ZERO:
-      jj_consume_token(ZERO);
+    case WHILE:
+      s = whileStmnt();
       break;
     case IDENT:
-      jj_consume_token(IDENT);
-      jj_consume_token(PLUS);
-      jj_consume_token(EINS);
+      s = assignment();
       break;
     default:
       jj_la1[2] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
- System.out.println("Ein gu\u0308ltiges assignment!");
-  }
-
-  final public void statement() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENT:
-      assignment();
-      break;
-    case WHILE:
-      whileStmnt();
-      break;
-    default:
-      jj_la1[3] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case SEMIKOLEN:
       jj_consume_token(SEMIKOLEN);
-      statement();
+      s = statement();
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[3] = jj_gen;
       ;
     }
- System.out.println("Ein gu\u0308ltiges statement!");
+    System.out.println("Ein gu\u0308ltiges statement!");
+    System.out.println(s);
+    System.out.println("Ein gu\u0308ltiges statement!");
+    {if (true) return s;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void whileStmnt() throws ParseException {
+  final public String whileStmnt() throws ParseException {
+  StringBuffer s = new StringBuffer();
+  String statement = null;
     jj_consume_token(WHILE);
     condition();
     jj_consume_token(DO);
     jj_consume_token(BEGIN);
-    statement();
+    markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\n");
+    zeileNummer++;
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 7) + "\n");
+    zeileNummer++;
+    s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--\n");
+    zeileNummer++;
+    s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--\n");
+    zeileNummer++;
+    s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\n");
+    zeileNummer++;
+    statement = statement();
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + zeileNummer + "\n");
+    zeileNummer++;
+    s.append(statement);
     jj_consume_token(END);
- System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    s.append("goto 1\n");
+    System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    System.out.println(s);
+    System.out.println("Ein gu\u0308ltiges whileStmnt!");
+    {if (true) return s.toString();}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public String assignment() throws ParseException {
+  StringBuffer s = new StringBuffer();
+    jj_consume_token(IDENT);
+    s.append("" + hilfsVarsMap.get(token.image));
+    jj_consume_token(ASSIGN);
+    s.append("=");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ZERO:
+      jj_consume_token(ZERO);
+      s.append("0\n");
+      break;
+    case IDENT:
+      jj_consume_token(IDENT);
+      s.append(token.image);
+      jj_consume_token(PLUS);
+      s.append("+");
+      jj_consume_token(EINS);
+      s.append("1\n");
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    zeileNummer++;
+    System.out.println("Ein gu\u0308ltiges assignment!");
+    System.out.println(s);
+    System.out.println("Ein gu\u0308ltiges assignment!");
+    {if (true) return s.toString();}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public void program() throws ParseException {
+  HashMap map = new HashMap();
+    jj_consume_token(IDENT);
+    jj_consume_token(LRUNDKLAMMER);
+    input();
+    jj_consume_token(SEMIKOLEN);
+    output();
+    jj_consume_token(RRUNDKLAMMER);
+    vars();
+    jj_consume_token(SEMIKOLEN);
+    statement();
+    jj_consume_token(0);
+    System.out.println("Ein gu\u0308ltiges program!");
   }
 
   /** Generated Token Manager. */
@@ -167,7 +265,7 @@ public class MeinParser implements MeinParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x40000,0x40000,0x5000,0x4020,0x200000,};
+      jj_la1_0 = new int[] {0x40000,0x40000,0x4020,0x200000,0x5000,};
    }
 
   /** Constructor with InputStream. */
