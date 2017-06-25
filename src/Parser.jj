@@ -32,17 +32,19 @@ public class MeinParser
 
   static HashMap < String, String > tempVarsMap = new HashMap < String, String > ();
 
-  static HashMap < String, String > outputVarsMap = new HashMap < String, String > ();
+  static HashMap < String, String > tempVarsMap2 = new HashMap < String, String > ();
 
   static HashMap < String, String > markerMap = new HashMap < String, String > ();
 
   static ArrayList < String > variableList = new ArrayList();
 
-  static int zeileNummer = 1;
+  static int zeileNummer = 0;
 
-  static StringBuffer s = new StringBuffer();
+  static StringBuffer code = new StringBuffer();
 
   static int varsNum = 1;
+
+  static boolean label = false; //false, true
 
   public static void main(String args []) throws Exception
   {
@@ -52,7 +54,7 @@ public class MeinParser
     //meinParser.assignment();
     //meinParser.whileStmnt();
     meinParser.program();
-    meinParser.wrieteFile(s.toString());
+    meinParser.wrieteFile(code.toString());
   }
 
   public void wrieteFile(String str) throws Exception
@@ -67,35 +69,86 @@ public class MeinParser
 
   public void createVars(String image)
   {
-    inputVarsMap.put(image, "R" + varsNum++);
-    hilfsVarsMap.put(image, "R" + varsNum++);
-    tempVarsMap.put(image, "R" + varsNum++);
+    inputVarsMap.put(image, "R" + varsNum);
+    hilfsVarsMap.put(image, "R1" + varsNum);
+    tempVarsMap.put(image, "R100" + varsNum);
+    tempVarsMap2.put(image, "R200" + varsNum);
+    varsNum++;
+  }
+
+  public void createHilfsUndTempVars(String image)
+  {
   }
 
   public void createCopyBefehle(StringBuffer s, String var)
   {
+    label(s);
     s.append(hilfsVarsMap.get(token.image) + " = 0 ;COPY (" + hilfsVarsMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
-    zeileNummer++;
+    label(s);
     markerMap.put("ersteAnfangMake", "" + zeileNummer);
     s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
-    zeileNummer++;
+    label(s);
     s.append(inputVarsMap.get(token.image) + "--\n");
-    zeileNummer++;
+    label(s);
     s.append(tempVarsMap.get(token.image) + "++\n");
-    zeileNummer++;
+    label(s);
     s.append("goto " + markerMap.get("ersteAnfangMake") + "\n");
-    zeileNummer++;
+    label(s);
     markerMap.put("ersteAnfangMake2", "" + zeileNummer);
     s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\n");
-    zeileNummer++;
+    label(s);
     s.append(tempVarsMap.get(var) + "--\n");
-    zeileNummer++;
+    label(s);
     s.append(hilfsVarsMap.get(var) + "++\n");
-    zeileNummer++;
+    label(s);
     s.append(inputVarsMap.get(var) + "++\n");
-    zeileNummer++;
+    label(s);
     s.append("goto " + markerMap.get("ersteAnfangMake2") + "\n");
+  }
+
+  public void label(StringBuffer s)
+  {
     zeileNummer++;
+    if (label) s.append(zeileNummer + ":");
+  }
+
+  public void zuweizungBefehle(StringBuffer s, String var1, String var)
+  {
+    label(s);
+    s.append(tempVarsMap2.get(var) + " = 0 ;COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    label(s);
+    markerMap.put("ersteAnfangMake", "" + zeileNummer);
+    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
+    label(s);
+    s.append(inputVarsMap.get(var) + "--\n");
+    label(s);
+    s.append(tempVarsMap.get(var) + "++\n");
+    label(s);
+    s.append("goto " + markerMap.get("ersteAnfangMake") + "\n");
+    label(s);
+    markerMap.put("ersteAnfangMake2", "" + zeileNummer);
+    s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\n");
+    label(s);
+    s.append(tempVarsMap.get(var) + "--\n");
+    label(s);
+    s.append(tempVarsMap2.get(var) + "++\n");
+    label(s);
+    s.append(inputVarsMap.get(var) + "++\n");
+    label(s);
+    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\n");
+    label(s);
+    s.append(tempVarsMap2.get(var) + "++\n");
+    label(s);
+    s.append(inputVarsMap.get(var1) + "=0\n");
+    label(s);
+    markerMap.put("anweizungAnfangMake", zeileNummer + "");
+    s.append("if " + tempVarsMap2.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
+    label(s);
+    s.append(tempVarsMap2.get(var) + "--" + "\n");
+    label(s);
+    s.append(inputVarsMap.get(var1) + "++" + "\n");
+    label(s);
+    s.append("goto " + markerMap.get("anweizungAnfangMake") + "\n");
   }
 }
 
@@ -177,12 +230,12 @@ void condition() :
 {
   < IDENT >
   {
-    createCopyBefehle(s, token.image);
+    createCopyBefehle(code, token.image);
   }
   < NOTEQUAL > 
   < IDENT >
   {
-    createCopyBefehle(s, token.image);
+    createCopyBefehle(code, token.image);
   }
   {
     System.out.println("Ein gueltiges condition!");
@@ -200,12 +253,18 @@ String statement() :
     s = assignment()
   )
   (
-    < SEMIKOLEN > s = statement()
+    {
+      String s1 = null;
+    }
+    < SEMIKOLEN > s1 = statement()
+    {
+      s = s + "" + s1;
+    }
   )?
   {
-    System.out.println("Ein gueltiges statement!");
-    System.out.println(s);
-    System.out.println("Ein gueltiges statement!");
+    //    System.out.println("--Ein gueltiges statement!");
+    //    System.out.println(s);
+    //    System.out.println("++Ein gueltiges statement!");
     return s;
   }
 }
@@ -220,30 +279,33 @@ String whileStmnt() :
   condition() < DO > 
   < BEGIN >
   {
+    label(s);
     markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
     s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\n");
-    zeileNummer++;
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 7) + "\n");
-    zeileNummer++;
+    label(s);
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 5) + "\n");
+    label(s);
     s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--\n");
-    zeileNummer++;
+    label(s);
     s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--\n");
-    zeileNummer++;
+    label(s);
     s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\n");
-    zeileNummer++;
+    label(s);
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto StatementEndLabel \n");
   }
   statement = statement()
   {
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + zeileNummer + "\n");
-    zeileNummer++;
+    
     s.append(statement);
   }
   < END >
   {
+    label(s);
     s.append("goto 1\n");
-    System.out.println("Ein gueltiges whileStmnt!");
-    System.out.println(s);
-    System.out.println("Ein gueltiges whileStmnt!");
+    s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer+1) + ""));
+    //    System.out.println("----whileStmnt!----");
+    //    System.out.println(s);
+    //    System.out.println("++++whileStmnt!++++");
     return s.toString();
   }
 }
@@ -255,7 +317,9 @@ String assignment() :
 {
   < IDENT >
   {
-    s.append("" + hilfsVarsMap.get(token.image));
+    String var1 = token.image;
+    label(s);
+    s.append("" + inputVarsMap.get(var1));
   }
   < ASSIGN >
   {
@@ -268,33 +332,39 @@ String assignment() :
     }
   | < IDENT >
     {
-      s.append(token.image);
+      String var2 = token.image;
+      s = new StringBuffer();
+      if (var1.equals(var2))
+      {
+        zeileNummer--;
+        label(s);
+        s.append("" + inputVarsMap.get(var1) + "++\n");
+      }
+      else
+      {
+        zeileNummer--;
+        zuweizungBefehle(s, var1, var2);
+      }
     }
-    < PLUS >
-    {
-      s.append("+");
-    }
+    < PLUS > 
     < EINS >
-    {
-      s.append("1\n");
-    }
   )
   {
-    zeileNummer++;
-    System.out.println("----------Ein gueltiges assignment!----------");
-    System.out.println(s);
-    System.out.println("++++++++++Ein gueltiges assignment!++++++++++");
+    //    System.out.println("----------assignment----------");
+    //    System.out.println(s);
+    //    System.out.println("++++++++++assignment++++++++++");
     return s.toString();
   }
 }
 
 void program() :
 {
-  HashMap map = new HashMap();
+  String s = null;
 }
 {
-  < IDENT > < LRUNDKLAMMER > input() < SEMIKOLEN > output() < RRUNDKLAMMER > vars() < SEMIKOLEN > statement() < EOF >
+  < IDENT > < LRUNDKLAMMER > input() < SEMIKOLEN > output() < RRUNDKLAMMER > vars() < SEMIKOLEN > s = statement()
   {
-    System.out.println("Ein gueltiges program!");
+    code.append(s);
   }
+  < EOF >
 }

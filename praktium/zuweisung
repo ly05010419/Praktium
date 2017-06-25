@@ -1,0 +1,16 @@
+R2 = 0;COPY (R2,R1)
+if R1 == 0 goto 6
+R1--
+R3++
+goto 2
+if R3 == 0 goto 11
+R3--
+R2++
+R1++
+goto 6
+R2++
+R4=0
+if R2 == 0 goto 14
+R2--
+R4++
+goto 11

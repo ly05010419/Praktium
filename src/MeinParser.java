@@ -17,17 +17,19 @@ public class MeinParser implements MeinParserConstants {
 
   static HashMap < String, String > tempVarsMap = new HashMap < String, String > ();
 
-  static HashMap < String, String > outputVarsMap = new HashMap < String, String > ();
+  static HashMap < String, String > tempVarsMap2 = new HashMap < String, String > ();
 
   static HashMap < String, String > markerMap = new HashMap < String, String > ();
 
   static ArrayList < String > variableList = new ArrayList();
 
-  static int zeileNummer = 1;
+  static int zeileNummer = 0;
 
-  static StringBuffer s = new StringBuffer();
+  static StringBuffer code = new StringBuffer();
 
   static int varsNum = 1;
+
+  static boolean label = false; //false, true
 
   public static void main(String args []) throws Exception
   {
@@ -37,7 +39,7 @@ public class MeinParser implements MeinParserConstants {
     //meinParser.assignment();
     //meinParser.whileStmnt();
     meinParser.program();
-    meinParser.wrieteFile(s.toString());
+    meinParser.wrieteFile(code.toString());
   }
 
   public void wrieteFile(String str) throws Exception
@@ -52,35 +54,86 @@ public class MeinParser implements MeinParserConstants {
 
   public void createVars(String image)
   {
-    inputVarsMap.put(image, "R" + varsNum++);
-    hilfsVarsMap.put(image, "R" + varsNum++);
-    tempVarsMap.put(image, "R" + varsNum++);
+    inputVarsMap.put(image, "R" + varsNum);
+    hilfsVarsMap.put(image, "R1" + varsNum);
+    tempVarsMap.put(image, "R100" + varsNum);
+    tempVarsMap2.put(image, "R200" + varsNum);
+    varsNum++;
+  }
+
+  public void createHilfsUndTempVars(String image)
+  {
   }
 
   public void createCopyBefehle(StringBuffer s, String var)
   {
+    label(s);
     s.append(hilfsVarsMap.get(token.image) + " = 0 ;COPY (" + hilfsVarsMap.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
-    zeileNummer++;
+    label(s);
     markerMap.put("ersteAnfangMake", "" + zeileNummer);
     s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
-    zeileNummer++;
+    label(s);
     s.append(inputVarsMap.get(token.image) + "--\u005cn");
-    zeileNummer++;
+    label(s);
     s.append(tempVarsMap.get(token.image) + "++\u005cn");
-    zeileNummer++;
+    label(s);
     s.append("goto " + markerMap.get("ersteAnfangMake") + "\u005cn");
-    zeileNummer++;
+    label(s);
     markerMap.put("ersteAnfangMake2", "" + zeileNummer);
     s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\u005cn");
-    zeileNummer++;
+    label(s);
     s.append(tempVarsMap.get(var) + "--\u005cn");
-    zeileNummer++;
+    label(s);
     s.append(hilfsVarsMap.get(var) + "++\u005cn");
-    zeileNummer++;
+    label(s);
     s.append(inputVarsMap.get(var) + "++\u005cn");
-    zeileNummer++;
+    label(s);
     s.append("goto " + markerMap.get("ersteAnfangMake2") + "\u005cn");
+  }
+
+  public void label(StringBuffer s)
+  {
     zeileNummer++;
+    if (label) s.append(zeileNummer + ":");
+  }
+
+  public void zuweizungBefehle(StringBuffer s, String var1, String var)
+  {
+    label(s);
+    s.append(tempVarsMap2.get(var) + " = 0 ;COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
+    label(s);
+    markerMap.put("ersteAnfangMake", "" + zeileNummer);
+    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
+    label(s);
+    s.append(inputVarsMap.get(var) + "--\u005cn");
+    label(s);
+    s.append(tempVarsMap.get(var) + "++\u005cn");
+    label(s);
+    s.append("goto " + markerMap.get("ersteAnfangMake") + "\u005cn");
+    label(s);
+    markerMap.put("ersteAnfangMake2", "" + zeileNummer);
+    s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\u005cn");
+    label(s);
+    s.append(tempVarsMap.get(var) + "--\u005cn");
+    label(s);
+    s.append(tempVarsMap2.get(var) + "++\u005cn");
+    label(s);
+    s.append(inputVarsMap.get(var) + "++\u005cn");
+    label(s);
+    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\u005cn");
+    label(s);
+    s.append(tempVarsMap2.get(var) + "++\u005cn");
+    label(s);
+    s.append(inputVarsMap.get(var1) + "=0\u005cn");
+    label(s);
+    markerMap.put("anweizungAnfangMake", zeileNummer + "");
+    s.append("if " + tempVarsMap2.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
+    label(s);
+    s.append(tempVarsMap2.get(var) + "--" + "\u005cn");
+    label(s);
+    s.append(inputVarsMap.get(var1) + "++" + "\u005cn");
+    label(s);
+    s.append("goto " + markerMap.get("anweizungAnfangMake") + "\u005cn");
   }
 
   final public void input() throws ParseException {
@@ -135,10 +188,10 @@ public class MeinParser implements MeinParserConstants {
 
   final public void condition() throws ParseException {
     jj_consume_token(IDENT);
-    createCopyBefehle(s, token.image);
+    createCopyBefehle(code, token.image);
     jj_consume_token(NOTEQUAL);
     jj_consume_token(IDENT);
-    createCopyBefehle(s, token.image);
+    createCopyBefehle(code, token.image);
     System.out.println("Ein gueltiges condition!");
   }
 
@@ -158,16 +211,18 @@ public class MeinParser implements MeinParserConstants {
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case SEMIKOLEN:
+      String s1 = null;
       jj_consume_token(SEMIKOLEN);
-      s = statement();
+      s1 = statement();
+      s = s + "" + s1;
       break;
     default:
       jj_la1[3] = jj_gen;
       ;
     }
-    System.out.println("Ein gueltiges statement!");
-    System.out.println(s);
-    System.out.println("Ein gueltiges statement!");
+    //    System.out.println("--Ein gueltiges statement!");
+    //    System.out.println(s);
+    //    System.out.println("++Ein gueltiges statement!");
     {if (true) return s;}
     throw new Error("Missing return statement in function");
   }
@@ -179,26 +234,28 @@ public class MeinParser implements MeinParserConstants {
     condition();
     jj_consume_token(DO);
     jj_consume_token(BEGIN);
+    label(s);
     markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
     s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\u005cn");
-    zeileNummer++;
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 7) + "\u005cn");
-    zeileNummer++;
+    label(s);
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 5) + "\u005cn");
+    label(s);
     s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--\u005cn");
-    zeileNummer++;
+    label(s);
     s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--\u005cn");
-    zeileNummer++;
+    label(s);
     s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\u005cn");
-    zeileNummer++;
+    label(s);
+    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto StatementEndLabel \u005cn");
     statement = statement();
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + zeileNummer + "\u005cn");
-    zeileNummer++;
     s.append(statement);
     jj_consume_token(END);
+    label(s);
     s.append("goto 1\u005cn");
-    System.out.println("Ein gueltiges whileStmnt!");
-    System.out.println(s);
-    System.out.println("Ein gueltiges whileStmnt!");
+    s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer+1) + ""));
+    //    System.out.println("----whileStmnt!----");
+    //    System.out.println(s);
+    //    System.out.println("++++whileStmnt!++++");
     {if (true) return s.toString();}
     throw new Error("Missing return statement in function");
   }
@@ -206,7 +263,9 @@ public class MeinParser implements MeinParserConstants {
   final public String assignment() throws ParseException {
   StringBuffer s = new StringBuffer();
     jj_consume_token(IDENT);
-    s.append("" + hilfsVarsMap.get(token.image));
+    String var1 = token.image;
+    label(s);
+    s.append("" + inputVarsMap.get(var1));
     jj_consume_token(ASSIGN);
     s.append("=");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -216,27 +275,36 @@ public class MeinParser implements MeinParserConstants {
       break;
     case IDENT:
       jj_consume_token(IDENT);
-      s.append(token.image);
+      String var2 = token.image;
+      s = new StringBuffer();
+      if (var1.equals(var2))
+      {
+        zeileNummer--;
+        label(s);
+        s.append("" + inputVarsMap.get(var1) + "++\u005cn");
+      }
+      else
+      {
+        zeileNummer--;
+        zuweizungBefehle(s, var1, var2);
+      }
       jj_consume_token(PLUS);
-      s.append("+");
       jj_consume_token(EINS);
-      s.append("1\u005cn");
       break;
     default:
       jj_la1[4] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    zeileNummer++;
-    System.out.println("----------Ein gueltiges assignment!----------");
-    System.out.println(s);
-    System.out.println("++++++++++Ein gueltiges assignment!++++++++++");
+    //    System.out.println("----------assignment----------");
+    //    System.out.println(s);
+    //    System.out.println("++++++++++assignment++++++++++");
     {if (true) return s.toString();}
     throw new Error("Missing return statement in function");
   }
 
   final public void program() throws ParseException {
-  HashMap map = new HashMap();
+  String s = null;
     jj_consume_token(IDENT);
     jj_consume_token(LRUNDKLAMMER);
     input();
@@ -245,9 +313,9 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(RRUNDKLAMMER);
     vars();
     jj_consume_token(SEMIKOLEN);
-    statement();
+    s = statement();
+    code.append(s);
     jj_consume_token(0);
-    System.out.println("Ein gueltiges program!");
   }
 
   /** Generated Token Manager. */
