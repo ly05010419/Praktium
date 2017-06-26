@@ -1,1 +1,18 @@
-a1=a1+1
+program(in X1, X2, X3; out Y)
+var(H1, H2, H3);
+
+H1 = 0;
+while H1 != X1 do begin
+    H2 = 0;
+
+    while H2 != X2 do begin
+        H3 = 0;
+
+        while H3 != X3 do begin
+            Y = Y + 1;
+            H3 = H3 + 1
+        end;
+        H2 = H2 + 1
+    end;
+    H1 = H1 + 1
+end

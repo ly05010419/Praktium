@@ -13,7 +13,7 @@ public class MeinParser implements MeinParserConstants {
 
   static HashMap < String, String > inputVarsMap = new HashMap < String, String > ();
 
-  static HashMap < String, String > hilfsVarsMap = new HashMap < String, String > ();
+  static HashMap < String, String > variablesMap = new HashMap < String, String > ();
 
   static HashMap < String, String > tempVarsMap = new HashMap < String, String > ();
 
@@ -21,7 +21,7 @@ public class MeinParser implements MeinParserConstants {
 
   static HashMap < String, String > markerMap = new HashMap < String, String > ();
 
-  static ArrayList < String > variableList = new ArrayList();
+  static ArrayList < String > variableList = new ArrayList< String >();
 
   static int zeileNummer = 0;
 
@@ -55,11 +55,13 @@ public class MeinParser implements MeinParserConstants {
   public void createVars(String image)
   {
     inputVarsMap.put(image, "R" + varsNum);
-    hilfsVarsMap.put(image, "R1" + varsNum);
+    variablesMap.put(image, "R1" + varsNum);
     tempVarsMap.put(image, "R100" + varsNum);
     tempVarsMap2.put(image, "R200" + varsNum);
     varsNum++;
   }
+
+
 
   public void createHilfsUndTempVars(String image)
   {
@@ -68,7 +70,7 @@ public class MeinParser implements MeinParserConstants {
   public void createCopyBefehle(StringBuffer s, String var)
   {
     label(s);
-    s.append(hilfsVarsMap.get(token.image) + " = 0 ;COPY (" + hilfsVarsMap.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
+    s.append(variablesMap.get(token.image) + " = 0 ;COPY (" + variablesMap.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
     label(s);
     markerMap.put("ersteAnfangMake", "" + zeileNummer);
     s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
@@ -84,7 +86,7 @@ public class MeinParser implements MeinParserConstants {
     label(s);
     s.append(tempVarsMap.get(var) + "--\u005cn");
     label(s);
-    s.append(hilfsVarsMap.get(var) + "++\u005cn");
+    s.append(variablesMap.get(var) + "++\u005cn");
     label(s);
     s.append(inputVarsMap.get(var) + "++\u005cn");
     label(s);
@@ -236,17 +238,17 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(BEGIN);
     label(s);
     markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\u005cn");
+    s.append("if " + variablesMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\u005cn");
     label(s);
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 5) + "\u005cn");
+    s.append("if " + variablesMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 5) + "\u005cn");
     label(s);
-    s.append(hilfsVarsMap.get(this.variableList.get(0)) + "--\u005cn");
+    s.append(variablesMap.get(this.variableList.get(0)) + "--\u005cn");
     label(s);
-    s.append(hilfsVarsMap.get(this.variableList.get(1)) + "--\u005cn");
+    s.append(variablesMap.get(this.variableList.get(1)) + "--\u005cn");
     label(s);
     s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\u005cn");
     label(s);
-    s.append("if " + hilfsVarsMap.get(this.variableList.get(1)) + "==0 goto StatementEndLabel \u005cn");
+    s.append("if " + variablesMap.get(this.variableList.get(1)) + "==0 goto StatementEndLabel \u005cn");
     statement = statement();
     s.append(statement);
     jj_consume_token(END);
