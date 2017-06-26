@@ -2,6 +2,5 @@ program(in a1,a2 ; out b1)
 var (h1,h2); 
 while a1!=a2 do 
 	begin 
-	a2=a1+1;
-	a1=a1+1
+	a1=0
 	end	

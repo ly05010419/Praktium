@@ -44,7 +44,7 @@ public class MeinParser
 
   static int varsNum = 1;
 
-  static boolean label = true; //false, true
+  static boolean label = false; //false, true
 
   public static void main(String args []) throws Exception
   {
@@ -69,13 +69,13 @@ public class MeinParser
 
   public void createVars(String image)
   {
-    inputVarsMap.put(image, "R" + varsNum);
+    inputVarsMap.put(image, "R" + varsNum++);
 
 //	code.append(";"+image+" zu "+"R" + varsNum+"\n");
     
-    variablesMap.put(image, "R1" + varsNum);
-    tempVarsMap.put(image, "R100" + varsNum);
-    tempVarsMap2.put(image, "R200" + varsNum);
+    variablesMap.put(image, "R" + varsNum++);
+    tempVarsMap.put(image, "R" + varsNum++);
+//    tempVarsMap2.put(image, "R" + varsNum++);
     varsNum++;
   }
 

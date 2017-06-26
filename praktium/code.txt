@@ -1,44 +1,28 @@
-1:R11 = 0 ;COPY (R11,R1)  
-2:if R1 == 0 goto 6
-3:R1--
-4:R1001++
-5:goto 2
-6:if R1001 == 0 goto 11
-7:R1001--
-8:R11++
-9:R1++
-10:goto 6
-11:R12 = 0 ;COPY (R12,R2)  
-12:if R2 == 0 goto 16
-13:R2--
-14:R1002++
-15:goto 12
-16:if R1002 == 0 goto 21
-17:R1002--
-18:R12++
-19:R2++
-20:goto 16
-21:if R11==0 goto 26
-22:if R12==0 goto 27
-23:R11--
-24:R12--
-25:goto 21
-26:if R12==0 goto 45 
-27:R2001 = 0 ;COPY (R2001,R1)  
-28:if R1 == 0 goto 32
-29:R1--
-30:R1001++
-31:goto 28
-32:if R1001 == 0 goto 37
-33:R1001--
-34:R2001++
-35:R1++
-36:goto 32
-37:R2001++
-38:R2=0
-39:if R2001 == 0 goto 43
-40:R2001--
-41:R2++
-42:goto 39
-43:R1++
-44:goto 1
+R2 = 0 ;COPY (R2,R1)  
+if R1 == 0 goto 6
+R1--
+R3++
+goto 2
+if R3 == 0 goto 11
+R3--
+R2++
+R1++
+goto 6
+R6 = 0 ;COPY (R6,R5)  
+if R5 == 0 goto 16
+R5--
+R7++
+goto 12
+if R7 == 0 goto 21
+R7--
+R6++
+R5++
+goto 16
+if R2==0 goto 26
+if R6==0 goto 27
+R2--
+R6--
+goto 21
+if R6==0 goto 29 
+R1=0
+goto 1
