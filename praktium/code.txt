@@ -1,28 +1,88 @@
+R21=0
+R22 = 0 ;COPY (R22,R21)  
+if R21 == 0 goto 7
+R21--
+R23++
+goto 3
+if R23 == 0 goto 12
+R23--
+R22++
+R21++
+goto 7
 R2 = 0 ;COPY (R2,R1)  
-if R1 == 0 goto 6
+if R1 == 0 goto 17
 R1--
 R3++
-goto 2
-if R3 == 0 goto 11
+goto 13
+if R3 == 0 goto 22
 R3--
 R2++
 R1++
-goto 6
-R6 = 0 ;COPY (R6,R5)  
-if R5 == 0 goto 16
-R5--
-R7++
-goto 12
-if R7 == 0 goto 21
-R7--
-R6++
-R5++
-goto 16
-if R2==0 goto 26
-if R6==0 goto 27
+goto 17
+if R2==0 goto 27
+if R7==0 goto 28
 R2--
+R7--
+goto 22
+if R7==0 goto 89 
+R26=0
+R27 = 0 ;COPY (R27,R26)  
+if R26 == 0 goto 34
+R26--
+R28++
+goto 30
+if R28 == 0 goto 39
+R28--
+R27++
+R26++
+goto 34
+R7 = 0 ;COPY (R7,R6)  
+if R6 == 0 goto 44
 R6--
-goto 21
-if R6==0 goto 29 
-R1=0
+R8++
+goto 40
+if R8 == 0 goto 49
+R8--
+R7++
+R6++
+goto 44
+if R2==0 goto 54
+if R7==0 goto 55
+R2--
+R7--
+goto 49
+if R7==0 goto 87 
+R31=0
+R32 = 0 ;COPY (R32,R31)  
+if R31 == 0 goto 61
+R31--
+R33++
+goto 57
+if R33 == 0 goto 66
+R33--
+R32++
+R31++
+goto 61
+R12 = 0 ;COPY (R12,R11)  
+if R11 == 0 goto 71
+R11--
+R13++
+goto 67
+if R13 == 0 goto 76
+R13--
+R12++
+R11++
+goto 71
+if R2==0 goto 81
+if R7==0 goto 82
+R2--
+R7--
+goto 76
+if R7==0 goto 85 
+R16++
+R31++
+goto 1
+R26++
+goto 1
+R21++
 goto 1

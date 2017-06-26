@@ -48,7 +48,7 @@ public class MeinParser
 
   public static void main(String args []) throws Exception
   {
-    FileReader reader = new FileReader("./praktium/test1.txt");
+    FileReader reader = new FileReader("./praktium/test2.txt");
     MeinParser meinParser = new MeinParser(reader);
     //meinParser.vars();
     //meinParser.assignment();
@@ -69,13 +69,12 @@ public class MeinParser
 
   public void createVars(String image)
   {
+    System.out.println(";"+image+" zu "+"R" + varsNum+",");
     inputVarsMap.put(image, "R" + varsNum++);
-
-//	code.append(";"+image+" zu "+"R" + varsNum+"\n");
-    
+	
     variablesMap.put(image, "R" + varsNum++);
     tempVarsMap.put(image, "R" + varsNum++);
-//    tempVarsMap2.put(image, "R" + varsNum++);
+    tempVarsMap2.put(image, "R" + varsNum++);
     varsNum++;
   }
 
@@ -236,18 +235,18 @@ void vars() :
   }
 }
 
-void condition() :
+void condition(StringBuffer s) :
 {
 }
 {
   < IDENT >
   {
-    createCopyBefehle(code, token.image);
+    createCopyBefehle(s, token.image);
   }
   < NOTEQUAL > 
   < IDENT >
   {
-    createCopyBefehle(code, token.image);
+    createCopyBefehle(s, token.image);
   }
   {
     System.out.println("Ein gueltiges condition!");
@@ -260,7 +259,7 @@ String statement() :
 }
 {
   (
-    s = whileStmnt()
+    s = whileStmnt() 
   | 
     s = assignment()
   )
@@ -275,7 +274,7 @@ String statement() :
   )?
   {
     //    System.out.println("--Ein gueltiges statement!");
-//    System.out.println(s);
+    //    System.out.println(s);
     //    System.out.println("++Ein gueltiges statement!");
     return s;
   }
@@ -288,7 +287,7 @@ String whileStmnt() :
 }
 {
   < WHILE > 
-  condition() < DO > 
+  condition(s) < DO > 
   < BEGIN >
   {
     label(s);

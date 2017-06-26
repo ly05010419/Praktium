@@ -33,7 +33,7 @@ public class MeinParser implements MeinParserConstants {
 
   public static void main(String args []) throws Exception
   {
-    FileReader reader = new FileReader("./praktium/test1.txt");
+    FileReader reader = new FileReader("./praktium/test2.txt");
     MeinParser meinParser = new MeinParser(reader);
     //meinParser.vars();
     //meinParser.assignment();
@@ -54,13 +54,12 @@ public class MeinParser implements MeinParserConstants {
 
   public void createVars(String image)
   {
+    System.out.println(";"+image+" zu "+"R" + varsNum+",");
     inputVarsMap.put(image, "R" + varsNum++);
-
-//	code.append(";"+image+" zu "+"R" + varsNum+"\n");
 
     variablesMap.put(image, "R" + varsNum++);
     tempVarsMap.put(image, "R" + varsNum++);
-//    tempVarsMap2.put(image, "R" + varsNum++);
+    tempVarsMap2.put(image, "R" + varsNum++);
     varsNum++;
   }
 
@@ -188,12 +187,12 @@ public class MeinParser implements MeinParserConstants {
     System.out.println("Ein gueltiges vars!");
   }
 
-  final public void condition() throws ParseException {
+  final public void condition(StringBuffer s) throws ParseException {
     jj_consume_token(IDENT);
-    createCopyBefehle(code, token.image);
+    createCopyBefehle(s, token.image);
     jj_consume_token(NOTEQUAL);
     jj_consume_token(IDENT);
-    createCopyBefehle(code, token.image);
+    createCopyBefehle(s, token.image);
     System.out.println("Ein gueltiges condition!");
   }
 
@@ -223,7 +222,7 @@ public class MeinParser implements MeinParserConstants {
       ;
     }
     //    System.out.println("--Ein gueltiges statement!");
-//    System.out.println(s);
+    //    System.out.println(s);
     //    System.out.println("++Ein gueltiges statement!");
     {if (true) return s;}
     throw new Error("Missing return statement in function");
@@ -233,7 +232,7 @@ public class MeinParser implements MeinParserConstants {
   StringBuffer s = new StringBuffer();
   String statement = null;
     jj_consume_token(WHILE);
-    condition();
+    condition(s);
     jj_consume_token(DO);
     jj_consume_token(BEGIN);
     label(s);
