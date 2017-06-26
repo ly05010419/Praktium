@@ -21,7 +21,7 @@ public class MeinParser implements MeinParserConstants {
 
   static HashMap < String, String > markerMap = new HashMap < String, String > ();
 
-  static ArrayList < String > variableList = new ArrayList< String >();
+  static ArrayList < String > variableList = new ArrayList < String > ();
 
   static int zeileNummer = 0;
 
@@ -29,7 +29,7 @@ public class MeinParser implements MeinParserConstants {
 
   static int varsNum = 1;
 
-  static boolean label = false; //false, true
+  static boolean label = true; //false, true
 
   public static void main(String args []) throws Exception
   {
@@ -55,16 +55,13 @@ public class MeinParser implements MeinParserConstants {
   public void createVars(String image)
   {
     inputVarsMap.put(image, "R" + varsNum);
+
+//	code.append(";"+image+" zu "+"R" + varsNum+"\n");
+
     variablesMap.put(image, "R1" + varsNum);
     tempVarsMap.put(image, "R100" + varsNum);
     tempVarsMap2.put(image, "R200" + varsNum);
     varsNum++;
-  }
-
-
-
-  public void createHilfsUndTempVars(String image)
-  {
   }
 
   public void createCopyBefehle(StringBuffer s, String var)
@@ -164,6 +161,7 @@ public class MeinParser implements MeinParserConstants {
   final public void output() throws ParseException {
     jj_consume_token(OUT);
     jj_consume_token(IDENT);
+    createVars(token.image);
     System.out.println("Ein gueltiges output!");
   }
 
@@ -171,6 +169,7 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(VAR);
     jj_consume_token(LRUNDKLAMMER);
     jj_consume_token(IDENT);
+    createVars(token.image);
     label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -183,6 +182,7 @@ public class MeinParser implements MeinParserConstants {
       }
       jj_consume_token(KOMMA);
       jj_consume_token(IDENT);
+      createVars(token.image);
     }
     jj_consume_token(RRUNDKLAMMER);
     System.out.println("Ein gueltiges vars!");
@@ -223,7 +223,7 @@ public class MeinParser implements MeinParserConstants {
       ;
     }
     //    System.out.println("--Ein gueltiges statement!");
-    //    System.out.println(s);
+//    System.out.println(s);
     //    System.out.println("++Ein gueltiges statement!");
     {if (true) return s;}
     throw new Error("Missing return statement in function");
@@ -254,7 +254,7 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(END);
     label(s);
     s.append("goto 1\u005cn");
-    s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer+1) + ""));
+    s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer + 1) + ""));
     //    System.out.println("----whileStmnt!----");
     //    System.out.println(s);
     //    System.out.println("++++whileStmnt!++++");
@@ -306,7 +306,7 @@ public class MeinParser implements MeinParserConstants {
   }
 
   final public void program() throws ParseException {
-  String s = null;
+  String s = "";
     jj_consume_token(IDENT);
     jj_consume_token(LRUNDKLAMMER);
     input();

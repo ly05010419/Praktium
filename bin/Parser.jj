@@ -36,7 +36,7 @@ public class MeinParser
 
   static HashMap < String, String > markerMap = new HashMap < String, String > ();
 
-  static ArrayList < String > variableList = new ArrayList< String >();
+  static ArrayList < String > variableList = new ArrayList < String > ();
 
   static int zeileNummer = 0;
 
@@ -44,7 +44,7 @@ public class MeinParser
 
   static int varsNum = 1;
 
-  static boolean label = false; //false, true
+  static boolean label = true; //false, true
 
   public static void main(String args []) throws Exception
   {
@@ -70,16 +70,13 @@ public class MeinParser
   public void createVars(String image)
   {
     inputVarsMap.put(image, "R" + varsNum);
+
+//	code.append(";"+image+" zu "+"R" + varsNum+"\n");
+    
     variablesMap.put(image, "R1" + varsNum);
     tempVarsMap.put(image, "R100" + varsNum);
     tempVarsMap2.put(image, "R200" + varsNum);
     varsNum++;
-  }
-
-  
-
-  public void createHilfsUndTempVars(String image)
-  {
   }
 
   public void createCopyBefehle(StringBuffer s, String var)
@@ -212,6 +209,9 @@ void output() :
 {
   < OUT > < IDENT >
   {
+    createVars(token.image);
+  }
+  {
     System.out.println("Ein gueltiges output!");
   }
 }
@@ -220,7 +220,17 @@ void vars() :
 {
 }
 {
-  < VAR > < LRUNDKLAMMER > < IDENT > (< KOMMA > < IDENT >)* < RRUNDKLAMMER >
+  < VAR > < LRUNDKLAMMER > < IDENT >
+  {
+    createVars(token.image);
+  }
+  (
+    < KOMMA > < IDENT >
+    {
+      createVars(token.image);
+    }
+  )*
+  < RRUNDKLAMMER >
   {
     System.out.println("Ein gueltiges vars!");
   }
@@ -265,7 +275,7 @@ String statement() :
   )?
   {
     //    System.out.println("--Ein gueltiges statement!");
-    //    System.out.println(s);
+//    System.out.println(s);
     //    System.out.println("++Ein gueltiges statement!");
     return s;
   }
@@ -297,14 +307,13 @@ String whileStmnt() :
   }
   statement = statement()
   {
-    
     s.append(statement);
   }
   < END >
   {
     label(s);
     s.append("goto 1\n");
-    s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer+1) + ""));
+    s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer + 1) + ""));
     //    System.out.println("----whileStmnt!----");
     //    System.out.println(s);
     //    System.out.println("++++whileStmnt!++++");
@@ -361,7 +370,7 @@ String assignment() :
 
 void program() :
 {
-  String s = null;
+  String s = "";
 }
 {
   < IDENT > < LRUNDKLAMMER > input() < SEMIKOLEN > output() < RRUNDKLAMMER > vars() < SEMIKOLEN > s = statement()
