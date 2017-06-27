@@ -1,5 +1,5 @@
 R21=0
-R22 = 0 ;COPY (R22,R21)  
+R22 = 0							;COPY (R22,R21)  
 if R21 == 0 goto 7
 R21--
 R23++
@@ -8,8 +8,8 @@ if R23 == 0 goto 12
 R23--
 R22++
 R21++
-goto 7
-R2 = 0 ;COPY (R2,R1)  
+goto 7							;COPY (R22,R21)  
+R2 = 0							;COPY (R2,R1)  
 if R1 == 0 goto 17
 R1--
 R3++
@@ -18,15 +18,15 @@ if R3 == 0 goto 22
 R3--
 R2++
 R1++
-goto 17
-if R2==0 goto 27
-if R7==0 goto 28
+goto 17							;COPY (R2,R1)  
+if R22==0 goto 27				;while R22!=R2 do begin  
+if R2==0 goto 28
+R22--
 R2--
-R7--
 goto 22
-if R7==0 goto 89 
+if R2==0 goto 89 				;while R22!=R2 do begin  
 R26=0
-R27 = 0 ;COPY (R27,R26)  
+R27 = 0							;COPY (R27,R26)  
 if R26 == 0 goto 34
 R26--
 R28++
@@ -35,8 +35,8 @@ if R28 == 0 goto 39
 R28--
 R27++
 R26++
-goto 34
-R7 = 0 ;COPY (R7,R6)  
+goto 34							;COPY (R27,R26)  
+R7 = 0							;COPY (R7,R6)  
 if R6 == 0 goto 44
 R6--
 R8++
@@ -45,15 +45,15 @@ if R8 == 0 goto 49
 R8--
 R7++
 R6++
-goto 44
-if R2==0 goto 54
+goto 44							;COPY (R7,R6)  
+if R27==0 goto 54				;while R27!=R7 do begin  
 if R7==0 goto 55
-R2--
+R27--
 R7--
 goto 49
-if R7==0 goto 87 
+if R7==0 goto 87 				;while R27!=R7 do begin  
 R31=0
-R32 = 0 ;COPY (R32,R31)  
+R32 = 0							;COPY (R32,R31)  
 if R31 == 0 goto 61
 R31--
 R33++
@@ -62,8 +62,8 @@ if R33 == 0 goto 66
 R33--
 R32++
 R31++
-goto 61
-R12 = 0 ;COPY (R12,R11)  
+goto 61							;COPY (R32,R31)  
+R12 = 0							;COPY (R12,R11)  
 if R11 == 0 goto 71
 R11--
 R13++
@@ -72,17 +72,17 @@ if R13 == 0 goto 76
 R13--
 R12++
 R11++
-goto 71
-if R2==0 goto 81
-if R7==0 goto 82
-R2--
-R7--
+goto 71							;COPY (R12,R11)  
+if R32==0 goto 81				;while R32!=R12 do begin  
+if R12==0 goto 82
+R32--
+R12--
 goto 76
-if R7==0 goto 85 
-R16++
-R31++
+if R12==0 goto 85 				;while R32!=R12 do begin  
+R16++							;Zuweisung: (R16=R16+1) 
+R31++							;Zuweisung: (R31=R31+1) 
 goto 1
-R26++
+R26++							;Zuweisung: (R26=R26+1) 
 goto 1
-R21++
+R21++							;Zuweisung: (R21=R21+1) 
 goto 1

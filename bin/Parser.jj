@@ -34,9 +34,7 @@ public class MeinParser
 
   static HashMap < String, String > tempVarsMap2 = new HashMap < String, String > ();
 
-  static HashMap < String, String > markerMap = new HashMap < String, String > ();
-
-  static ArrayList < String > variableList = new ArrayList < String > ();
+  static HashMap < String, String > markerMap = new HashMap < String, String > (); 
 
   static int zeileNummer = 0;
 
@@ -80,7 +78,7 @@ public class MeinParser
   public void createCopyBefehle(StringBuffer s, String var)
   {
     label(s);
-    s.append(variablesMap.get(token.image) + " = 0 ;COPY (" + variablesMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    s.append(variablesMap.get(token.image) + " = 0							;COPY (" + variablesMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
     label(s);
     markerMap.put("ersteAnfangMake", "" + zeileNummer);
     s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
@@ -100,7 +98,7 @@ public class MeinParser
     label(s);
     s.append(inputVarsMap.get(var) + "++\n");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\n");
+    s.append("goto " + markerMap.get("ersteAnfangMake2") + "							;COPY (" + variablesMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
   }
 
   public void label(StringBuffer s)
@@ -109,10 +107,10 @@ public class MeinParser
     if (label) s.append(zeileNummer + ":");
   }
 
-  public void zuweizungBefehle(StringBuffer s, String var1, String var)
+  public void zuweizungBefehle(StringBuffer s, String dest, String var)
   {
     label(s);
-    s.append(tempVarsMap2.get(var) + " = 0 ;COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    s.append(tempVarsMap2.get(var) + " = 0 							;Zuweizung:(" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \n");
     label(s);
     markerMap.put("ersteAnfangMake", "" + zeileNummer);
     s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
@@ -132,20 +130,20 @@ public class MeinParser
     label(s);
     s.append(inputVarsMap.get(var) + "++\n");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\n");
+    s.append("goto " + markerMap.get("ersteAnfangMake2") + "							;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \n");
     label(s);
-    s.append(tempVarsMap2.get(var) + "++\n");
+    s.append(tempVarsMap2.get(var) + "++							;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1)  \n");
     label(s);
-    s.append(inputVarsMap.get(var1) + "=0\n");
+    s.append(inputVarsMap.get(dest) + "=0\n");
     label(s);
     markerMap.put("anweizungAnfangMake", zeileNummer + "");
     s.append("if " + tempVarsMap2.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
     label(s);
     s.append(tempVarsMap2.get(var) + "--" + "\n");
     label(s);
-    s.append(inputVarsMap.get(var1) + "++" + "\n");
+    s.append(inputVarsMap.get(dest) + "++" + "\n");
     label(s);
-    s.append("goto " + markerMap.get("anweizungAnfangMake") + "\n");
+    s.append("goto " + markerMap.get("anweizungAnfangMake") +  "							;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1)  \n");
   }
 }
 
@@ -186,13 +184,11 @@ void input() :
 {
   < IN > < IDENT >
   {
-    this.variableList.add(token.image);
     createVars(token.image);
   }
   (
     < KOMMA > < IDENT >
     {
-      this.variableList.add(token.image);
       createVars(token.image);
     }
   )*
@@ -234,21 +230,24 @@ void vars() :
   }
 }
 
-void condition(StringBuffer s) :
+ArrayList < String > condition(StringBuffer s) :
 {
+  ArrayList < String > variableList = new ArrayList < String > ();
 }
 {
   < IDENT >
   {
+    variableList.add(token.image);
     createCopyBefehle(s, token.image);
   }
   < NOTEQUAL > 
   < IDENT >
   {
+    variableList.add(token.image);
     createCopyBefehle(s, token.image);
   }
   {
-//    System.out.println("Ein gueltiges condition!");
+	return variableList;
   }
 }
 
@@ -283,25 +282,26 @@ String whileStmnt() :
 {
   StringBuffer s = new StringBuffer();
   String statement = null;
+  ArrayList < String > variableList = null;
 }
 {
   < WHILE > 
-  condition(s) < DO > 
+  variableList = condition(s) < DO > 
   < BEGIN >
   {
     label(s);
     markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
-    s.append("if " + variablesMap.get(this.variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\n");
+    s.append("if " + variablesMap.get(variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "				;while "+variablesMap.get(variableList.get(0))+"!="+variablesMap.get(variableList.get(1))+" do begin  \n");
     label(s);
-    s.append("if " + variablesMap.get(this.variableList.get(1)) + "==0 goto " + (zeileNummer + 5) + "\n");
+    s.append("if " + variablesMap.get(variableList.get(1)) + "==0 goto " + (zeileNummer + 5) + "\n");
     label(s);
-    s.append(variablesMap.get(this.variableList.get(0)) + "--\n");
+    s.append(variablesMap.get(variableList.get(0)) + "--\n");
     label(s);
-    s.append(variablesMap.get(this.variableList.get(1)) + "--\n");
+    s.append(variablesMap.get(variableList.get(1)) + "--\n");
     label(s);
     s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\n");
     label(s);
-    s.append("if " + variablesMap.get(this.variableList.get(1)) + "==0 goto StatementEndLabel \n");
+    s.append("if " + variablesMap.get(variableList.get(1)) + "==0 goto StatementEndLabel 				;while "+variablesMap.get(variableList.get(0))+"!="+variablesMap.get(variableList.get(1))+" do begin  \n");
   }
   statement = statement()
   {
@@ -347,7 +347,7 @@ String assignment() :
       {
         zeileNummer--;
         label(s);
-        s.append("" + inputVarsMap.get(var1) + "++\n");
+        s.append("" + inputVarsMap.get(var1) + "++							;Zuweisung: ("+inputVarsMap.get(var1)+"="+inputVarsMap.get(var1)+"+1) \n");
       }
       else
       {
