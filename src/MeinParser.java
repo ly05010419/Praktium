@@ -11,15 +11,13 @@ public class MeinParser implements MeinParserConstants {
   // static Stack argStack = new Stack();
   static Queue < String > argStack = new LinkedList < String > ();
 
-  static HashMap < String, String > inputVarsMap = new HashMap < String, String > ();
+  static HashMap < String, String > registerAbbildung = new HashMap < String, String > ();
 
   static HashMap < String, String > variablesMap = new HashMap < String, String > ();
 
   static HashMap < String, String > tempVarsMap = new HashMap < String, String > ();
 
   static HashMap < String, String > tempVarsMap2 = new HashMap < String, String > ();
-
-  static HashMap < String, String > markerMap = new HashMap < String, String > ();
 
   static int zeileNummer = 0;
 
@@ -52,38 +50,46 @@ public class MeinParser implements MeinParserConstants {
 
   public void createVars(String image)
   {
-    System.out.println(";"+image+" zu "+"R" + varsNum+",");
-    inputVarsMap.put(image, "R" + varsNum++);
-    variablesMap.put(image, "R" + varsNum++);
-    tempVarsMap.put(image, "R" + varsNum++);
-    tempVarsMap2.put(image, "R" + varsNum++);
-    varsNum++;
+    System.out.println(""+image+" zu "+"R" + varsNum+",");
+    registerAbbildung.put(image, "R" + varsNum++);
+  }
+
+   public void createHilfsVars()
+  {
+   for (Iterator<String> iter = registerAbbildung.keySet().iterator(); iter.hasNext(); ) {
+        String key = iter.next();
+        variablesMap.put(key, "R" + varsNum++);
+        tempVarsMap.put(key, "R" + varsNum++);
+        tempVarsMap2.put(key, "R" + varsNum++);
+        }
   }
 
   public void createCopyBefehle(StringBuffer s, String var)
   {
     label(s);
-    s.append(variablesMap.get(token.image) + " = 0\u0009\u0009\u0009\u0009\u0009\u0009\u0009;COPY (" + variablesMap.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
+    s.append(variablesMap.get(var) + " = 0\u0009\u0009\u0009\u0009\u0009\u0009\u0009;COPY (" + variablesMap.get(var) + "," + registerAbbildung.get(var) + ")  \u005cn");
     label(s);
-    markerMap.put("ersteAnfangMake", "" + zeileNummer);
-    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
+    String ersteAnfangMake = zeileNummer+"";
+
+    s.append("if " + registerAbbildung.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
     label(s);
-    s.append(inputVarsMap.get(token.image) + "--\u005cn");
+    s.append(registerAbbildung.get(var) + "--\u005cn");
     label(s);
-    s.append(tempVarsMap.get(token.image) + "++\u005cn");
+    s.append(tempVarsMap.get(var) + "++\u005cn");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake") + "\u005cn");
+    s.append("goto " + ersteAnfangMake + "\u005cn");
     label(s);
-    markerMap.put("ersteAnfangMake2", "" + zeileNummer);
+
+    String ersteAnfangMake2 = zeileNummer+"";
     s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\u005cn");
     label(s);
     s.append(tempVarsMap.get(var) + "--\u005cn");
     label(s);
     s.append(variablesMap.get(var) + "++\u005cn");
     label(s);
-    s.append(inputVarsMap.get(var) + "++\u005cn");
+    s.append(registerAbbildung.get(var) + "++\u005cn");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;COPY (" + variablesMap.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
+    s.append("goto " + ersteAnfangMake2 + "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;COPY (" + variablesMap.get(var) + "," + registerAbbildung.get(var) + ")  \u005cn");
   }
 
   public void label(StringBuffer s)
@@ -95,40 +101,43 @@ public class MeinParser implements MeinParserConstants {
   public void zuweizungBefehle(StringBuffer s, String dest, String var)
   {
     label(s);
-    s.append(tempVarsMap2.get(var) + " = 0 \u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung:(" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
+    s.append(tempVarsMap2.get(var) + " = 0 \u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung:(" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + registerAbbildung.get(var) + ")  \u005cn");
     label(s);
-    markerMap.put("ersteAnfangMake", "" + zeileNummer);
-    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
+
+    String ersteAnfangMake = zeileNummer+"";
+    s.append("if " + registerAbbildung.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
     label(s);
-    s.append(inputVarsMap.get(var) + "--\u005cn");
+    s.append(registerAbbildung.get(var) + "--\u005cn");
     label(s);
     s.append(tempVarsMap.get(var) + "++\u005cn");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake") + "\u005cn");
+    s.append("goto " + ersteAnfangMake + "\u005cn");
     label(s);
-    markerMap.put("ersteAnfangMake2", "" + zeileNummer);
+
+    String ersteAnfangMake2 = zeileNummer+"";
     s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\u005cn");
     label(s);
     s.append(tempVarsMap.get(var) + "--\u005cn");
     label(s);
     s.append(tempVarsMap2.get(var) + "++\u005cn");
     label(s);
-    s.append(inputVarsMap.get(var) + "++\u005cn");
+    s.append(registerAbbildung.get(var) + "++\u005cn");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake2") + "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \u005cn");
+    s.append("goto " + ersteAnfangMake2 + "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + registerAbbildung.get(var) + ")  \u005cn");
     label(s);
-    s.append(tempVarsMap2.get(var) + "++\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1)  \u005cn");
+    s.append(tempVarsMap2.get(var) + "++\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1)  \u005cn");
     label(s);
-    s.append(inputVarsMap.get(dest) + "=0\u005cn");
+    s.append(registerAbbildung.get(dest) + "=0\u005cn");
     label(s);
-    markerMap.put("anweizungAnfangMake", zeileNummer + "");
+
+    String anweizungAnfangMake = zeileNummer+"";
     s.append("if " + tempVarsMap2.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
     label(s);
     s.append(tempVarsMap2.get(var) + "--" + "\u005cn");
     label(s);
-    s.append(inputVarsMap.get(dest) + "++" + "\u005cn");
+    s.append(registerAbbildung.get(dest) + "++" + "\u005cn");
     label(s);
-    s.append("goto " + markerMap.get("anweizungAnfangMake") +  "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1)  \u005cn");
+    s.append("goto " + anweizungAnfangMake +  "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1)  \u005cn");
   }
 
   final public void input() throws ParseException {
@@ -186,11 +195,9 @@ public class MeinParser implements MeinParserConstants {
   ArrayList < String > variableList = new ArrayList < String > ();
     jj_consume_token(IDENT);
     variableList.add(token.image);
-    createCopyBefehle(s, token.image);
     jj_consume_token(NOTEQUAL);
     jj_consume_token(IDENT);
     variableList.add(token.image);
-    createCopyBefehle(s, token.image);
         {if (true) return variableList;}
     throw new Error("Missing return statement in function");
   }
@@ -231,12 +238,16 @@ public class MeinParser implements MeinParserConstants {
   StringBuffer s = new StringBuffer();
   String statement = null;
   ArrayList < String > variableList = null;
+  String anfangWhile = (zeileNummer+1)+"";
     jj_consume_token(WHILE);
     variableList = condition(s);
     jj_consume_token(DO);
     jj_consume_token(BEGIN);
+        for(String var : variableList) {
+        createCopyBefehle(s, var);
+         }
     label(s);
-    markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
+    String anfangWhileStmnt = (zeileNummer)+"";
     s.append("if " + variablesMap.get(variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "\u0009\u0009\u0009\u0009;while "+variablesMap.get(variableList.get(0))+"!="+variablesMap.get(variableList.get(1))+" do begin  \u005cn");
     label(s);
     s.append("if " + variablesMap.get(variableList.get(1)) + "==0 goto " + (zeileNummer + 5) + "\u005cn");
@@ -245,14 +256,15 @@ public class MeinParser implements MeinParserConstants {
     label(s);
     s.append(variablesMap.get(variableList.get(1)) + "--\u005cn");
     label(s);
-    s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\u005cn");
+    s.append("goto " + anfangWhileStmnt + "\u005cn");
     label(s);
     s.append("if " + variablesMap.get(variableList.get(1)) + "==0 goto StatementEndLabel \u0009\u0009\u0009\u0009;while "+variablesMap.get(variableList.get(0))+"!="+variablesMap.get(variableList.get(1))+" do begin  \u005cn");
     statement = statement();
     s.append(statement);
     jj_consume_token(END);
     label(s);
-    s.append("goto 1\u005cn");
+    s.append("goto "+anfangWhile+"\u005cn");
+
     s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer + 1) + ""));
     //    System.out.println("----whileStmnt!----");
     //    System.out.println(s);
@@ -266,13 +278,13 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(IDENT);
     String var1 = token.image;
     label(s);
-    s.append("" + inputVarsMap.get(var1));
+    s.append("" + registerAbbildung.get(var1));
     jj_consume_token(ASSIGN);
     s.append("=");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ZERO:
       jj_consume_token(ZERO);
-      s.append("0\u005cn");
+      s.append("0\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweisung: ("+registerAbbildung.get(var1)+"=0) \u005cn");
       break;
     case IDENT:
       jj_consume_token(IDENT);
@@ -282,7 +294,7 @@ public class MeinParser implements MeinParserConstants {
       {
         zeileNummer--;
         label(s);
-        s.append("" + inputVarsMap.get(var1) + "++\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweisung: ("+inputVarsMap.get(var1)+"="+inputVarsMap.get(var1)+"+1) \u005cn");
+        s.append("" + registerAbbildung.get(var1) + "++\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweisung: ("+registerAbbildung.get(var1)+"="+registerAbbildung.get(var1)+"+1) \u005cn");
       }
       else
       {
@@ -313,6 +325,7 @@ public class MeinParser implements MeinParserConstants {
     output();
     jj_consume_token(RRUNDKLAMMER);
     vars();
+                                                                                     createHilfsVars();
     jj_consume_token(SEMIKOLEN);
     s = statement();
     code.append(s);

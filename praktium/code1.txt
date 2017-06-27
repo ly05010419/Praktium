@@ -1,44 +1,44 @@
-R2 = 0							;COPY (R2,R1)  
+R6 = 0							;COPY (R6,R1)  
 if R1 == 0 goto 6
 R1--
-R3++
-goto 2
-if R3 == 0 goto 11
-R3--
-R2++
-R1++
-goto 6							;COPY (R2,R1)  
-R7 = 0							;COPY (R7,R6)  
-if R6 == 0 goto 16
-R6--
-R8++
-goto 12
-if R8 == 0 goto 21
-R8--
 R7++
-R6++
-goto 16							;COPY (R7,R6)  
-if R2==0 goto 26				;while R2!=R7 do begin  
-if R7==0 goto 27
-R2--
+goto 2
+if R7 == 0 goto 11
 R7--
+R6++
+R1++
+goto 6							;COPY (R6,R1)  
+R9 = 0							;COPY (R9,R2)  
+if R2 == 0 goto 16
+R2--
+R10++
+goto 12
+if R10 == 0 goto 21
+R10--
+R9++
+R2++
+goto 16							;COPY (R9,R2)  
+if R6==0 goto 26				;while R6!=R9 do begin  
+if R9==0 goto 27
+R6--
+R9--
 goto 21
-if R7==0 goto 45 				;while R2!=R7 do begin  
-R4 = 0 							;Zuweizung:(R6=R1+1) COPY (R4,R1)  
+if R9==0 goto 45 				;while R6!=R9 do begin  
+R8 = 0 							;Zuweizung:(R2=R1+1) COPY (R8,R1)  
 if R1 == 0 goto 32
 R1--
-R3++
+R7++
 goto 28
-if R3 == 0 goto 37
-R3--
-R4++
+if R7 == 0 goto 37
+R7--
+R8++
 R1++
-goto 32							;Zuweizung: (R6=R1+1) COPY (R4,R1)  
-R4++							;Zuweizung: (R6=R1+1)  
-R6=0
-if R4 == 0 goto 43
-R4--
-R6++
-goto 39							;Zuweizung: (R6=R1+1)  
+goto 32							;Zuweizung: (R2=R1+1) COPY (R8,R1)  
+R8++							;Zuweizung: (R2=R1+1)  
+R2=0
+if R8 == 0 goto 43
+R8--
+R2++
+goto 39							;Zuweizung: (R2=R1+1)  
 R1++							;Zuweisung: (R1=R1+1) 
 goto 1

@@ -26,15 +26,13 @@ public class MeinParser
   // static Stack argStack = new Stack();
   static Queue < String > argStack = new LinkedList < String > ();
 
-  static HashMap < String, String > inputVarsMap = new HashMap < String, String > ();
+  static HashMap < String, String > registerAbbildung = new HashMap < String, String > ();
 
   static HashMap < String, String > variablesMap = new HashMap < String, String > ();
 
   static HashMap < String, String > tempVarsMap = new HashMap < String, String > ();
 
   static HashMap < String, String > tempVarsMap2 = new HashMap < String, String > ();
-
-  static HashMap < String, String > markerMap = new HashMap < String, String > (); 
 
   static int zeileNummer = 0;
 
@@ -67,38 +65,46 @@ public class MeinParser
 
   public void createVars(String image)
   {
-    System.out.println(";"+image+" zu "+"R" + varsNum+",");
-    inputVarsMap.put(image, "R" + varsNum++);
-    variablesMap.put(image, "R" + varsNum++);
-    tempVarsMap.put(image, "R" + varsNum++);
-    tempVarsMap2.put(image, "R" + varsNum++);
-    varsNum++;
+    System.out.println(""+image+" zu "+"R" + varsNum+",");
+    registerAbbildung.put(image, "R" + varsNum++);
+  }
+
+   public void createHilfsVars()
+  {
+   for (Iterator<String> iter = registerAbbildung.keySet().iterator(); iter.hasNext(); ) {
+    	String key = iter.next(); 
+    	variablesMap.put(key, "R" + varsNum++);
+    	tempVarsMap.put(key, "R" + varsNum++);
+    	tempVarsMap2.put(key, "R" + varsNum++);
+  	}
   }
 
   public void createCopyBefehle(StringBuffer s, String var)
   {
     label(s);
-    s.append(variablesMap.get(token.image) + " = 0							;COPY (" + variablesMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    s.append(variablesMap.get(var) + " = 0							;COPY (" + variablesMap.get(var) + "," + registerAbbildung.get(var) + ")  \n");
     label(s);
-    markerMap.put("ersteAnfangMake", "" + zeileNummer);
-    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
+    String ersteAnfangMake = zeileNummer+"";
+    
+    s.append("if " + registerAbbildung.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
     label(s);
-    s.append(inputVarsMap.get(token.image) + "--\n");
+    s.append(registerAbbildung.get(var) + "--\n");
     label(s);
-    s.append(tempVarsMap.get(token.image) + "++\n");
+    s.append(tempVarsMap.get(var) + "++\n");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake") + "\n");
+    s.append("goto " + ersteAnfangMake + "\n");
     label(s);
-    markerMap.put("ersteAnfangMake2", "" + zeileNummer);
+    
+    String ersteAnfangMake2 = zeileNummer+"";
     s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\n");
     label(s);
     s.append(tempVarsMap.get(var) + "--\n");
     label(s);
     s.append(variablesMap.get(var) + "++\n");
     label(s);
-    s.append(inputVarsMap.get(var) + "++\n");
+    s.append(registerAbbildung.get(var) + "++\n");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake2") + "							;COPY (" + variablesMap.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    s.append("goto " + ersteAnfangMake2 + "							;COPY (" + variablesMap.get(var) + "," + registerAbbildung.get(var) + ")  \n");
   }
 
   public void label(StringBuffer s)
@@ -110,40 +116,43 @@ public class MeinParser
   public void zuweizungBefehle(StringBuffer s, String dest, String var)
   {
     label(s);
-    s.append(tempVarsMap2.get(var) + " = 0 							;Zuweizung:(" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    s.append(tempVarsMap2.get(var) + " = 0 							;Zuweizung:(" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + registerAbbildung.get(var) + ")  \n");
     label(s);
-    markerMap.put("ersteAnfangMake", "" + zeileNummer);
-    s.append("if " + inputVarsMap.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
+    
+    String ersteAnfangMake = zeileNummer+"";
+    s.append("if " + registerAbbildung.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
     label(s);
-    s.append(inputVarsMap.get(var) + "--\n");
+    s.append(registerAbbildung.get(var) + "--\n");
     label(s);
     s.append(tempVarsMap.get(var) + "++\n");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake") + "\n");
+    s.append("goto " + ersteAnfangMake + "\n");
     label(s);
-    markerMap.put("ersteAnfangMake2", "" + zeileNummer);
+    
+    String ersteAnfangMake2 = zeileNummer+"";
     s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\n");
     label(s);
     s.append(tempVarsMap.get(var) + "--\n");
     label(s);
     s.append(tempVarsMap2.get(var) + "++\n");
     label(s);
-    s.append(inputVarsMap.get(var) + "++\n");
+    s.append(registerAbbildung.get(var) + "++\n");
     label(s);
-    s.append("goto " + markerMap.get("ersteAnfangMake2") + "							;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + inputVarsMap.get(var) + ")  \n");
+    s.append("goto " + ersteAnfangMake2 + "							;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + registerAbbildung.get(var) + ")  \n");
     label(s);
-    s.append(tempVarsMap2.get(var) + "++							;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1)  \n");
+    s.append(tempVarsMap2.get(var) + "++							;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1)  \n");
     label(s);
-    s.append(inputVarsMap.get(dest) + "=0\n");
+    s.append(registerAbbildung.get(dest) + "=0\n");
     label(s);
-    markerMap.put("anweizungAnfangMake", zeileNummer + "");
+    
+    String anweizungAnfangMake = zeileNummer+"";
     s.append("if " + tempVarsMap2.get(var) + " == 0 goto " + (zeileNummer + 4) + "\n");
     label(s);
     s.append(tempVarsMap2.get(var) + "--" + "\n");
     label(s);
-    s.append(inputVarsMap.get(dest) + "++" + "\n");
+    s.append(registerAbbildung.get(dest) + "++" + "\n");
     label(s);
-    s.append("goto " + markerMap.get("anweizungAnfangMake") +  "							;Zuweizung: (" + inputVarsMap.get(dest) + "=" + inputVarsMap.get(var) + "+1)  \n");
+    s.append("goto " + anweizungAnfangMake +  "							;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1)  \n");
   }
 }
 
@@ -238,13 +247,11 @@ ArrayList < String > condition(StringBuffer s) :
   < IDENT >
   {
     variableList.add(token.image);
-    createCopyBefehle(s, token.image);
   }
   < NOTEQUAL > 
   < IDENT >
   {
     variableList.add(token.image);
-    createCopyBefehle(s, token.image);
   }
   {
 	return variableList;
@@ -283,14 +290,19 @@ String whileStmnt() :
   StringBuffer s = new StringBuffer();
   String statement = null;
   ArrayList < String > variableList = null;
+  String anfangWhile = (zeileNummer+1)+"";
 }
 {
   < WHILE > 
   variableList = condition(s) < DO > 
   < BEGIN >
   {
+    
+	for(String var : variableList) { 
+    	createCopyBefehle(s, var);
+ 	 }
     label(s);
-    markerMap.put("AnfangWhileStmnt", "" + zeileNummer);
+    String anfangWhileStmnt = (zeileNummer)+"";
     s.append("if " + variablesMap.get(variableList.get(0)) + "==0 goto " + (zeileNummer + 5) + "				;while "+variablesMap.get(variableList.get(0))+"!="+variablesMap.get(variableList.get(1))+" do begin  \n");
     label(s);
     s.append("if " + variablesMap.get(variableList.get(1)) + "==0 goto " + (zeileNummer + 5) + "\n");
@@ -299,7 +311,7 @@ String whileStmnt() :
     label(s);
     s.append(variablesMap.get(variableList.get(1)) + "--\n");
     label(s);
-    s.append("goto " + markerMap.get("AnfangWhileStmnt") + "\n");
+    s.append("goto " + anfangWhileStmnt + "\n");
     label(s);
     s.append("if " + variablesMap.get(variableList.get(1)) + "==0 goto StatementEndLabel 				;while "+variablesMap.get(variableList.get(0))+"!="+variablesMap.get(variableList.get(1))+" do begin  \n");
   }
@@ -310,7 +322,8 @@ String whileStmnt() :
   < END >
   {
     label(s);
-    s.append("goto 1\n");
+    s.append("goto "+anfangWhile+"\n");
+    
     s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer + 1) + ""));
     //    System.out.println("----whileStmnt!----");
     //    System.out.println(s);
@@ -328,7 +341,7 @@ String assignment() :
   {
     String var1 = token.image;
     label(s);
-    s.append("" + inputVarsMap.get(var1));
+    s.append("" + registerAbbildung.get(var1));
   }
   < ASSIGN >
   {
@@ -337,7 +350,7 @@ String assignment() :
   (
     < ZERO >
     {
-      s.append("0\n");
+      s.append("0							;Zuweisung: ("+registerAbbildung.get(var1)+"=0) \n");
     }
   | < IDENT >
     {
@@ -347,7 +360,7 @@ String assignment() :
       {
         zeileNummer--;
         label(s);
-        s.append("" + inputVarsMap.get(var1) + "++							;Zuweisung: ("+inputVarsMap.get(var1)+"="+inputVarsMap.get(var1)+"+1) \n");
+        s.append("" + registerAbbildung.get(var1) + "++							;Zuweisung: ("+registerAbbildung.get(var1)+"="+registerAbbildung.get(var1)+"+1) \n");
       }
       else
       {
@@ -371,7 +384,7 @@ void program() :
   String s = "";
 }
 {
-  < IDENT > < LRUNDKLAMMER > input() < SEMIKOLEN > output() < RRUNDKLAMMER > vars() < SEMIKOLEN > s = statement()
+  < IDENT > < LRUNDKLAMMER > input() < SEMIKOLEN > output() < RRUNDKLAMMER > vars() {createHilfsVars(); } < SEMIKOLEN > s = statement()
   {
     code.append(s);
   }
