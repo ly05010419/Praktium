@@ -1,0 +1,16 @@
+R7 = 0 							;Zuweizung:(R2=R1+1) COPY (R7,R1)  
+if R1 == 0 goto 6
+R1--
+R6++
+goto 2
+if R6 == 0 goto 11
+R6--
+R7++
+R1++
+goto 6							;Zuweizung: (R2=R1+1) COPY (R7,R1)  
+R7++							;Zuweizung: (R2=R1+1)  
+R2=0
+if R7 == 0 goto 17
+R7--
+R2++
+goto 13							;Zuweizung: (R2=R1+1)  

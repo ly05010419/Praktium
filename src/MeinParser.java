@@ -48,10 +48,26 @@ public class MeinParser implements MeinParserConstants {
     out.close();
   }
 
-  public void createVars(String image)
+  public void createVars(String image) throws VariableException
   {
+    if(image==null) {
+                throw new VariableException("varialble ist Null");
+     }
+
+     if(registerAbbildung.containsKey(image)) {
+        	throw new VariableException(image+" ist schon da");
+     }
+
     System.out.println(""+image+" zu "+"R" + varsNum+",");
     registerAbbildung.put(image, "R" + varsNum++);
+  }
+
+  public String getVars(String image) throws VariableException {
+     if(registerAbbildung.get(image)==null) {
+                throw new VariableException("varialble ist Null");
+       }
+
+     return registerAbbildung.get(image);
   }
 
    public void createHilfsVars()
@@ -64,16 +80,19 @@ public class MeinParser implements MeinParserConstants {
         }
   }
 
-  public void createCopyBefehle(StringBuffer s, String var)
+  public void createCopyBefehle(StringBuffer s, String var)  throws VariableException
   {
+     if(var==null) {
+                throw new VariableException("varialble ist Null");
+     }
     label(s);
-    s.append(variablesMap.get(var) + " = 0\u0009\u0009\u0009\u0009\u0009\u0009\u0009;COPY (" + variablesMap.get(var) + "," + registerAbbildung.get(var) + ")  \u005cn");
+    s.append(variablesMap.get(var) + " = 0\u0009\u0009\u0009\u0009\u0009\u0009\u0009;COPY (" + variablesMap.get(var) + "," + getVars(var) + ")  \u005cn");
     label(s);
     String ersteAnfangMake = zeileNummer+"";
 
-    s.append("if " + registerAbbildung.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
+    s.append("if " + getVars(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
     label(s);
-    s.append(registerAbbildung.get(var) + "--\u005cn");
+    s.append(getVars(var) + "--\u005cn");
     label(s);
     s.append(tempVarsMap.get(var) + "++\u005cn");
     label(s);
@@ -87,9 +106,9 @@ public class MeinParser implements MeinParserConstants {
     label(s);
     s.append(variablesMap.get(var) + "++\u005cn");
     label(s);
-    s.append(registerAbbildung.get(var) + "++\u005cn");
+    s.append(getVars(var) + "++\u005cn");
     label(s);
-    s.append("goto " + ersteAnfangMake2 + "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;COPY (" + variablesMap.get(var) + "," + registerAbbildung.get(var) + ")  \u005cn");
+    s.append("goto " + ersteAnfangMake2 + "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;COPY (" + variablesMap.get(var) + "," + getVars(var) + ")  \u005cn");
   }
 
   public void label(StringBuffer s)
@@ -98,16 +117,20 @@ public class MeinParser implements MeinParserConstants {
     if (label) s.append(zeileNummer + ":");
   }
 
-  public void zuweizungBefehle(StringBuffer s, String dest, String var)
+  public void zuweizungBefehle(StringBuffer s, String dest, String var)  throws VariableException
   {
+    if(var==null || dest == null) {
+                throw new VariableException("varialble ist Null");
+     }
     label(s);
-    s.append(tempVarsMap2.get(var) + " = 0 \u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung:(" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + registerAbbildung.get(var) + ")  \u005cn");
+    s.append(tempVarsMap2.get(var) + " = 0 \u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung:(" + getVars(dest) + "=" + getVars(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + getVars(var) + ")  \u005cn");
     label(s);
 
     String ersteAnfangMake = zeileNummer+"";
-    s.append("if " + registerAbbildung.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
+
+    s.append("if " + getVars(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
     label(s);
-    s.append(registerAbbildung.get(var) + "--\u005cn");
+    s.append(getVars(var) + "--\u005cn");
     label(s);
     s.append(tempVarsMap.get(var) + "++\u005cn");
     label(s);
@@ -115,29 +138,31 @@ public class MeinParser implements MeinParserConstants {
     label(s);
 
     String ersteAnfangMake2 = zeileNummer+"";
+
     s.append("if " + tempVarsMap.get(var) + " == 0 goto " + (zeileNummer + 5) + "\u005cn");
     label(s);
     s.append(tempVarsMap.get(var) + "--\u005cn");
     label(s);
     s.append(tempVarsMap2.get(var) + "++\u005cn");
     label(s);
-    s.append(registerAbbildung.get(var) + "++\u005cn");
+    s.append(getVars(var) + "++\u005cn");
     label(s);
-    s.append("goto " + ersteAnfangMake2 + "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + registerAbbildung.get(var) + ")  \u005cn");
+    s.append("goto " + ersteAnfangMake2 + "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + getVars(dest) + "=" + getVars(var) + "+1) COPY (" + tempVarsMap2.get(var) + "," + getVars(var) + ")  \u005cn");
     label(s);
-    s.append(tempVarsMap2.get(var) + "++\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1)  \u005cn");
+    s.append(tempVarsMap2.get(var) + "++\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + getVars(dest) + "=" + getVars(var) + "+1)  \u005cn");
     label(s);
-    s.append(registerAbbildung.get(dest) + "=0\u005cn");
+    s.append(getVars(dest) + "=0\u005cn");
     label(s);
 
     String anweizungAnfangMake = zeileNummer+"";
+
     s.append("if " + tempVarsMap2.get(var) + " == 0 goto " + (zeileNummer + 4) + "\u005cn");
     label(s);
     s.append(tempVarsMap2.get(var) + "--" + "\u005cn");
     label(s);
-    s.append(registerAbbildung.get(dest) + "++" + "\u005cn");
+    s.append(getVars(dest) + "++" + "\u005cn");
     label(s);
-    s.append("goto " + anweizungAnfangMake +  "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + registerAbbildung.get(dest) + "=" + registerAbbildung.get(var) + "+1)  \u005cn");
+    s.append("goto " + anweizungAnfangMake +  "\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweizung: (" + getVars(dest) + "=" + getVars(var) + "+1)  \u005cn");
   }
 
   final public void input() throws ParseException {
@@ -227,9 +252,7 @@ public class MeinParser implements MeinParserConstants {
       jj_la1[3] = jj_gen;
       ;
     }
-    //    System.out.println("--Ein gueltiges statement!");
     //    System.out.println(s);
-    //    System.out.println("++Ein gueltiges statement!");
     {if (true) return s;}
     throw new Error("Missing return statement in function");
   }
@@ -266,9 +289,7 @@ public class MeinParser implements MeinParserConstants {
     s.append("goto "+anfangWhile+"\u005cn");
 
     s = new StringBuffer(s.toString().replace("StatementEndLabel", (zeileNummer + 1) + ""));
-    //    System.out.println("----whileStmnt!----");
-    //    System.out.println(s);
-    //    System.out.println("++++whileStmnt!++++");
+//    System.out.println(s);
     {if (true) return s.toString();}
     throw new Error("Missing return statement in function");
   }
@@ -278,13 +299,13 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(IDENT);
     String var1 = token.image;
     label(s);
-    s.append("" + registerAbbildung.get(var1));
+    s.append("" + getVars(var1));
     jj_consume_token(ASSIGN);
     s.append("=");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ZERO:
       jj_consume_token(ZERO);
-      s.append("0\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweisung: ("+registerAbbildung.get(var1)+"=0) \u005cn");
+      s.append("0\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweisung: ("+getVars(var1)+"=0) \u005cn");
       break;
     case IDENT:
       jj_consume_token(IDENT);
@@ -294,7 +315,7 @@ public class MeinParser implements MeinParserConstants {
       {
         zeileNummer--;
         label(s);
-        s.append("" + registerAbbildung.get(var1) + "++\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweisung: ("+registerAbbildung.get(var1)+"="+registerAbbildung.get(var1)+"+1) \u005cn");
+        s.append("" + getVars(var1) + "++\u0009\u0009\u0009\u0009\u0009\u0009\u0009;Zuweisung: ("+getVars(var1)+"="+getVars(var1)+"+1) \u005cn");
       }
       else
       {
@@ -309,9 +330,7 @@ public class MeinParser implements MeinParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-    //    System.out.println("----------assignment----------");
     //    System.out.println(s);
-    //    System.out.println("++++++++++assignment++++++++++");
     {if (true) return s.toString();}
     throw new Error("Missing return statement in function");
   }
