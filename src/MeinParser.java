@@ -56,7 +56,6 @@ public class MeinParser implements MeinParserConstants {
   {
     System.out.println(";"+image+" zu "+"R" + varsNum+",");
     inputVarsMap.put(image, "R" + varsNum++);
-
     variablesMap.put(image, "R" + varsNum++);
     tempVarsMap.put(image, "R" + varsNum++);
     tempVarsMap2.put(image, "R" + varsNum++);
@@ -154,14 +153,14 @@ public class MeinParser implements MeinParserConstants {
       this.variableList.add(token.image);
       createVars(token.image);
     }
-    System.out.println("Ein gueltiges Input!");
+
   }
 
   final public void output() throws ParseException {
     jj_consume_token(OUT);
     jj_consume_token(IDENT);
     createVars(token.image);
-    System.out.println("Ein gueltiges output!");
+
   }
 
   final public void vars() throws ParseException {
@@ -184,7 +183,7 @@ public class MeinParser implements MeinParserConstants {
       createVars(token.image);
     }
     jj_consume_token(RRUNDKLAMMER);
-    System.out.println("Ein gueltiges vars!");
+
   }
 
   final public void condition(StringBuffer s) throws ParseException {
@@ -193,7 +192,7 @@ public class MeinParser implements MeinParserConstants {
     jj_consume_token(NOTEQUAL);
     jj_consume_token(IDENT);
     createCopyBefehle(s, token.image);
-    System.out.println("Ein gueltiges condition!");
+
   }
 
   final public String statement() throws ParseException {

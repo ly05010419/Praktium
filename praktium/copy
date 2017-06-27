@@ -1,5 +1,4 @@
-;COPY (R2,R1)
-R2 = 0
+R2 = 0;COPY (R2,R1)
 if R1 == 0 goto 6
 R1--
 R3++

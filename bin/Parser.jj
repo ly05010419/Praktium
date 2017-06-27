@@ -71,7 +71,6 @@ public class MeinParser
   {
     System.out.println(";"+image+" zu "+"R" + varsNum+",");
     inputVarsMap.put(image, "R" + varsNum++);
-	
     variablesMap.put(image, "R" + varsNum++);
     tempVarsMap.put(image, "R" + varsNum++);
     tempVarsMap2.put(image, "R" + varsNum++);
@@ -198,7 +197,7 @@ void input() :
     }
   )*
   {
-    System.out.println("Ein gueltiges Input!");
+//    System.out.println("Ein gueltiges Input!");
   }
 }
 
@@ -211,7 +210,7 @@ void output() :
     createVars(token.image);
   }
   {
-    System.out.println("Ein gueltiges output!");
+//    System.out.println("Ein gueltiges output!");
   }
 }
 
@@ -231,7 +230,7 @@ void vars() :
   )*
   < RRUNDKLAMMER >
   {
-    System.out.println("Ein gueltiges vars!");
+//    System.out.println("Ein gueltiges vars!");
   }
 }
 
@@ -249,7 +248,7 @@ void condition(StringBuffer s) :
     createCopyBefehle(s, token.image);
   }
   {
-    System.out.println("Ein gueltiges condition!");
+//    System.out.println("Ein gueltiges condition!");
   }
 }
 
